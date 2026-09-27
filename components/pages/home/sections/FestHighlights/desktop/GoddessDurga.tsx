@@ -10,8 +10,8 @@ import { IMAGES } from "@/lib/images";
 // ═══════════════════════════════════════════════════════════════════
 export const GoddessDurga = memo(function GoddessDurga() {
   return (
-    /* GODDESS DURGA - Divine presence - BEHIND content on desktop */
-    <div className="absolute right-0 bottom-0 w-[50%] sm:w-[40%] md:w-[35%] lg:w-[30%] xl:w-[28%] pointer-events-none z-[5]">
+    /* GODDESS DURGA - Divine presence - BEHIND content, hidden on mobile */
+    <div className="hidden sm:block absolute right-0 bottom-0 w-[40%] md:w-[35%] lg:w-[30%] xl:w-[28%] pointer-events-none z-[5]">
       {/* Divine aura behind Durga */}
       <div
         className="absolute inset-[-30%] rounded-full pointer-events-none"

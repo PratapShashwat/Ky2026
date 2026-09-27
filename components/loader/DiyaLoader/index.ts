@@ -1,2 +1,1 @@
-export { PageLoader } from "./PageLoader";
 export { DiyaLoader } from "./DiyaLoader";

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   HeroSection,
   ProNitesSection,
@@ -7,10 +8,16 @@ import {
   FestHighlightsSection,
 } from "@/components/pages/home/sections";
 import { Navbar } from "@/components/navbar/Navbar";
+import { AuthToastHandler } from "@/components/auth";
 
 export default function Home() {
   return (
     <main>
+      {/* Auth toast handler for success message after login */}
+      <Suspense fallback={null}>
+        <AuthToastHandler />
+      </Suspense>
+
       {/* Page-level navbar: hidden over the Hero, revealed for every section
           below it. Sits above all section wrappers so nothing paints over it. */}
       <Navbar />

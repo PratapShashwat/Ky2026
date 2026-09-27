@@ -6,6 +6,7 @@ import "./globals.css";
 import GsapRegistration from "@/lib/GsapRegistration";
 import { SmoothScroll } from "@/lib/SmoothScroll";
 import { PageLoader } from "@/components/loader";
+import { AuthProvider, QueryProvider } from "@/components/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,13 +45,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <GsapRegistration />
-        <Suspense fallback={null}>
-          <PageLoader />
-        </Suspense>
-        <MotionConfig reducedMotion="user">
-          <SmoothScroll>{children}</SmoothScroll>
-        </MotionConfig>
+        <QueryProvider>
+          <AuthProvider>
+            <GsapRegistration />
+            <Suspense fallback={null}>
+              <PageLoader />
+            </Suspense>
+            <MotionConfig reducedMotion="user">
+              <SmoothScroll>{children}</SmoothScroll>
+            </MotionConfig>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

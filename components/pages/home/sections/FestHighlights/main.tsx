@@ -139,7 +139,7 @@ function FestHighlightsContent() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen py-10 sm:py-12 md:py-16 overflow-hidden"
+      className="relative min-h-[auto] sm:min-h-screen py-6 sm:py-12 md:py-16 overflow-hidden"
       style={{
         background: `linear-gradient(135deg, 
           #1A1A2E 0%, 
@@ -250,7 +250,7 @@ function FestHighlightsContent() {
       <FestHighlightsMobile />
 
       {/* CONTENT - Centered on desktop with temple on left as backdrop */}
-      <div className="relative z-10 min-h-[35vh] sm:min-h-[45vh] lg:min-h-[85vh] flex items-start sm:items-center pt-4 sm:pt-10 lg:pt-8">
+      <div className="relative z-10 min-h-[auto] sm:min-h-[45vh] lg:min-h-[85vh] flex items-start sm:items-center pt-0 sm:pt-10 lg:pt-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center lg:justify-center">
             <div

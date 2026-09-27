@@ -37,7 +37,7 @@ export const BHUGate = memo(function BHUGate({ ref }: BHUGateProps) {
         alt="IIT BHU Gate"
         width={1400}
         height={900}
-        className="sm:bottom-62 bottom-0 absolute z-10"
+        className="sm:bottom-61 bottom-0 absolute z-10"
         style={{
           filter: "drop-shadow(0 0 40px rgba(255,215,0,0.3)) drop-shadow(0 15px 30px rgba(0,0,0,0.5))",
         }}

@@ -99,6 +99,16 @@ export const IMAGES = {
   },
 
   // ============================================
+  // FOOTER SECTION - Desktop decorative elements
+  // ============================================
+  footer: {
+    etherealDancer: `${IMAGEKIT_BASE}/footer/desktop/ethereal-dancer.png?v=3`,
+    floatingGarland: `${IMAGEKIT_BASE}/footer/desktop/floating-garland.png`,
+    ghatSilhouette: `${IMAGEKIT_BASE}/footer/desktop/ghat-silhouette.png`,
+    subtleRangoli: `${IMAGEKIT_BASE}/footer/desktop/subtle-rangoli.png`,
+  },
+
+  // ============================================
   // MISCELLANEOUS
   // ============================================
   misc: {

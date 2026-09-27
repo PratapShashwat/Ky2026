@@ -510,6 +510,18 @@ body {
   }
 }
 
+/* ── Footer: Fade in up animation ── */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ── Navbar: shining sparkle beside each link ── */
 .nav-shine {
   filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8))

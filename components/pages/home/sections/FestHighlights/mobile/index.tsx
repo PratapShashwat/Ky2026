@@ -10,7 +10,7 @@ import { IMAGES } from "@/lib/images";
  */
 export const FestHighlightsMobile = memo(function FestHighlightsMobile() {
   return (
-    <div className="lg:hidden w-full px-4 pt-16 sm:pt-20 mb-6 sm:mb-8">
+    <div className="lg:hidden w-full px-4 pt-4 sm:pt-8 mb-4 sm:mb-6">
       <Image
         src={IMAGES.highlights.durgaTemple}
         alt="Kashi Yatra Festival Venue"

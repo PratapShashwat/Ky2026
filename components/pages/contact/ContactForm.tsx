@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useState, type FormEvent } from "react";
+import { memo, type FormEvent, useRef } from "react";
 import { IMAGES } from "@/lib/images";
 import { COLORS, JAZZ_COLORS } from "@/components/pages/home/constants/palette";
 import { CornerOrnaments } from "./CornerOrnaments";
-
-type Status = "idle" | "sending" | "sent";
+import { useContact } from "@/lib/api/hooks";
+import { ContactSuccessToast } from "@/components/toast/success/contact";
+import { ContactErrorToast } from "@/components/toast/error/contact";
+import { DiyaLoader } from "@/components/loader";
 
 const fieldStyle = {
   background: "rgba(12,8,16,0.6)",
@@ -18,14 +20,26 @@ const fieldStyle = {
 // CONTACT FORM SECTION
 // ═══════════════════════════════════════════════════════════════════
 export const ContactForm = memo(function ContactForm() {
-  const [status, setStatus] = useState<Status>("idle");
+  const formRef = useRef<HTMLFormElement>(null);
+  const { submitContact, isPending, isSuccess } = useContact({
+    successToast: <ContactSuccessToast />,
+    errorToast: <ContactErrorToast />,
+  });
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (status === "sending") return;
-    setStatus("sending");
-    // Front-end only placeholder — wire to the backend endpoint when available.
-    setTimeout(() => setStatus("sent"), 900);
+    if (isPending) return;
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+
+    submitContact({ name, email });
+  }
+
+  // Reset form on success
+  if (isSuccess && formRef.current) {
+    formRef.current.reset();
   }
 
   return (
@@ -70,7 +84,7 @@ export const ContactForm = memo(function ContactForm() {
             Leave your details and our team will reach out to you.
           </p>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <label className="block">
                 <span
@@ -110,7 +124,7 @@ export const ContactForm = memo(function ContactForm() {
             <div className="flex justify-center pt-3">
               <button
                 type="submit"
-                disabled={status === "sending"}
+                disabled={isPending}
                 className="group relative w-full sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {/* Soft outer aura on hover */}
@@ -138,14 +152,16 @@ export const ContactForm = memo(function ContactForm() {
                     }}
                   >
                     {/* Shimmer sweep - desktop only */}
-                    <div
-                      className="hidden lg:block absolute inset-0 opacity-40"
-                      style={{
-                        background:
-                          "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.85) 50%, transparent 60%)",
-                        animation: "shimmerSlide 3.5s infinite",
-                      }}
-                    />
+                    {!isPending && (
+                      <div
+                        className="hidden lg:block absolute inset-0 opacity-40"
+                        style={{
+                          background:
+                            "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.85) 50%, transparent 60%)",
+                          animation: "shimmerSlide 3.5s infinite",
+                        }}
+                      />
+                    )}
                     <span
                       className="relative z-10 font-black text-sm sm:text-base uppercase tracking-[0.22em] flex items-center justify-center gap-3"
                       style={{
@@ -153,42 +169,32 @@ export const ContactForm = memo(function ContactForm() {
                         textShadow: "0 1px 0 rgba(255,255,255,0.35)",
                       }}
                     >
-                      {/* Gold-dark envelope glyph */}
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#3d0a18"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
-                        <path d="M3 6l9 6 9-6" />
-                      </svg>
-                      <span>
-                        {status === "sent"
-                          ? "Received!"
-                          : status === "sending"
-                            ? "Sending…"
-                            : "Reach Out"}
-                      </span>
+                      {isPending ? (
+                        <DiyaLoader text="Sending…" size="md" color="dark" />
+                      ) : (
+                        <>
+                          {/* Gold-dark envelope glyph */}
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#3d0a18"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+                            <path d="M3 6l9 6 9-6" />
+                          </svg>
+                          <span>Reach Out</span>
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
               </button>
             </div>
-
-            {status === "sent" && (
-              <p
-                className="text-center text-sm"
-                style={{ color: JAZZ_COLORS.LIME }}
-              >
-                🙏 Thank you! We&apos;ve received your details and will reach
-                out soon.
-              </p>
-            )}
           </form>
         </div>
       </div>

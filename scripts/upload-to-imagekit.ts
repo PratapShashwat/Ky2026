@@ -100,6 +100,17 @@ const IMAGES_TO_UPLOAD: ImageToUpload[] = [
   { localFile: "home/proNites/common/aerobics.png", remoteName: "aerobics.png", folder: "/pro-nites/common" },
 
   // ============================================
+  // FOOTER - Desktop decorative elements
+  // ============================================
+  { localFile: "home/footer/desktop/dancer.png", remoteName: "ethereal-dancer.png", folder: "/footer/desktop" },
+  { localFile: "home/footer/desktop/floatingGarland.png", remoteName: "floating-garland.png", folder: "/footer/desktop" },
+  { localFile: "home/footer/desktop/lampCluster.png", remoteName: "lamp-cluster.png", folder: "/footer/desktop" },
+  { localFile: "home/footer/desktop/silhoutteGhat.png", remoteName: "ghat-silhouette.png", folder: "/footer/desktop" },
+  { localFile: "home/footer/desktop/spiritualOrna.png", remoteName: "spiritual-ornament.png", folder: "/footer/desktop" },
+  { localFile: "home/footer/desktop/standingPillar.png", remoteName: "temple-pillar.png", folder: "/footer/desktop" },
+  { localFile: "home/footer/desktop/subtleRangoli.png", remoteName: "subtle-rangoli.png", folder: "/footer/desktop" },
+
+  // ============================================
   // MISCELLANEOUS
   // ============================================
   { localFile: "miscellaneous/common/lord_shiva.png", remoteName: "lord-shiva.png", folder: "/misc" },

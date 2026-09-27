@@ -1,0 +1,12 @@
+export const ROYAL_COLORS = {
+  BG_DEEP: "#0a0510",
+  BG_ROYAL: "#120a18",
+  BG_WINE: "#1a0c14",
+  GOLD: "#FFD700",
+  GOLD_LIGHT: "#FFE55C",
+  GOLD_DARK: "#B8860B",
+  CREAM: "#FDF6E3",
+  HOT_PINK: "#FF1493",
+  ROYAL_PURPLE: "#6B21A8",
+  DEEP_MAGENTA: "#9D174D",
+} as const;
