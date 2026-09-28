@@ -42,7 +42,8 @@ export const SteppingStone = memo(function SteppingStone({
 
   const stone = (
     <span style={animStyle} className={`stone-responsive ${className}`}>
-      <span className="stone-interactive relative inline-block">
+      {/* Outer wrapper with padding for larger hover target area */}
+      <span className="stone-interactive relative inline-block p-3 -m-3">
         {/* Ripple rings */}
         <span
           aria-hidden

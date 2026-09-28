@@ -370,7 +370,7 @@ export function HeroSection() {
       {/* TEMPLE PNG - Highest z-index, aligned with ghats */}
       <div
         ref={templeRef}
-        className="absolute bottom-[31%] sm:bottom-[31%] md:bottom-[28%] right-[-9%] sm:right-[-6%] md:right-[-7%] w-[55%] sm:w-[62%] md:w-[56%] lg:w-[48%]"
+        className="absolute bottom-[31%] sm:bottom-[31%] md:bottom-[28%] right-[-9%] sm:right-[-6%] md:right-[-7%] w-[55%] sm:w-[62%] md:w-[56%] lg:w-[48%] pointer-events-none"
         style={{
           zIndex: Z_HERO.TEMPLE,
         }}

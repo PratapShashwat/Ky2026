@@ -21,7 +21,7 @@ export const Ghats = memo(
       return (
         <div
           ref={ref}
-          className="absolute bottom-[30%] sm:bottom-[24.7%] left-[-8%] sm:left-[-8%] w-[70%] sm:w-[60%]"
+          className="absolute bottom-[30%] sm:bottom-[24.7%] left-[-8%] sm:left-[-8%] w-[70%] sm:w-[60%] pointer-events-none"
           style={{
             zIndex: Z_HERO.GHATS,
           }}
@@ -73,7 +73,7 @@ export const Ghats = memo(
     return (
       <div
         ref={ref}
-        className="absolute bottom-[28%] sm:bottom-[17.3%] left-[3%] sm:left-[-3%] w-[65%] sm:w-[62%]"
+        className="absolute bottom-[28%] sm:bottom-[17.3%] left-[3%] sm:left-[-3%] w-[65%] sm:w-[62%] pointer-events-none"
         style={{
           zIndex: Z_HERO.GHATS,
         }}
