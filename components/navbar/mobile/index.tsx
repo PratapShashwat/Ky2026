@@ -3,6 +3,8 @@
 import { memo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import { primaryLinks, secondaryLinks } from "../config/links.config";
 
 /**
@@ -12,6 +14,7 @@ import { primaryLinks, secondaryLinks } from "../config/links.config";
 export const NavbarMobile = memo(function NavbarMobile() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   // Check if a link is active
   const isActive = (href: string) => {
@@ -19,7 +22,27 @@ export const NavbarMobile = memo(function NavbarMobile() {
     return pathname.startsWith(href);
   };
 
-  const allLinks = [...primaryLinks, ...secondaryLinks];
+  // Filter out LOGIN link if user is authenticated, add PROFILE instead
+  const authLinks = session
+    ? [
+        ...secondaryLinks.filter((link) => link.label !== "LOGIN"),
+        { label: "PROFILE", href: "/profile", icon: "om" as const },
+      ]
+    : secondaryLinks;
+
+  const allLinks = [...primaryLinks, ...authLinks];
+
+  const handleSignOut = () => {
+    setOpen(false);
+    signOut({ callbackUrl: "/" });
+  };
+
+  const initials = session?.user?.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || "U";
 
   return (
     <div className="sm:hidden">
@@ -139,41 +162,76 @@ export const NavbarMobile = memo(function NavbarMobile() {
           aria-label="Mobile"
           style={{ fontFamily: "var(--font-ethereal), serif" }}
         >
-          {/* Mystical header — ॐ crowned title */}
-          <div className="flex flex-col items-center pb-2">
-            <span
-              className="text-[18px] leading-none"
-              style={{
-                background: "linear-gradient(135deg, #FFF3C4, #FFD700 45%, #B8860B)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-                filter: "drop-shadow(0 0 4px rgba(255,215,0,0.6))",
-              }}
-            >
-              ॐ
-            </span>
-            <span
-              className="mt-1 text-[10px] tracking-[0.4em] uppercase"
-              style={{ color: "#6b3f14", fontWeight: 900 }}
-            >
-              नक्शा
-            </span>
-            <span
-              aria-hidden
-              className="mt-1.5 flex items-center justify-center gap-2 w-full text-[#8a5a1a] opacity-80"
-            >
+          {/* User info header when logged in */}
+          {session?.user ? (
+            <div className="flex items-center gap-3 pb-3 mb-2 border-b border-[#8a5a1a]/30">
+              <div 
+                className="h-10 w-10 rounded-full overflow-hidden border-2 border-[#d4a853] flex items-center justify-center"
+                style={{
+                  background: session.user.image ? "transparent" : "linear-gradient(135deg, #d4a853 0%, #8b6914 100%)",
+                }}
+              >
+                {session.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "User"}
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span className="text-sm font-bold" style={{ color: "#1a0a05" }}>
+                    {initials}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate" style={{ color: "#3a1505" }}>
+                  {session.user.name}
+                </p>
+                <p className="text-xs truncate" style={{ color: "#6b3f14" }}>
+                  {session.user.email}
+                </p>
+              </div>
+            </div>
+          ) : (
+            /* Mystical header — ॐ crowned title */
+            <div className="flex flex-col items-center pb-2">
               <span
-                className="h-px flex-1"
-                style={{ background: "linear-gradient(90deg, transparent, #8a5a1a)" }}
-              />
-              <span className="text-[9px]">✦</span>
+                className="text-[18px] leading-none"
+                style={{
+                  background: "linear-gradient(135deg, #FFF3C4, #FFD700 45%, #B8860B)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                  filter: "drop-shadow(0 0 4px rgba(255,215,0,0.6))",
+                }}
+              >
+                ॐ
+              </span>
               <span
-                className="h-px flex-1"
-                style={{ background: "linear-gradient(90deg, #8a5a1a, transparent)" }}
-              />
-            </span>
-          </div>
+                className="mt-1 text-[10px] tracking-[0.4em] uppercase"
+                style={{ color: "#6b3f14", fontWeight: 900 }}
+              >
+                नक्शा
+              </span>
+              <span
+                aria-hidden
+                className="mt-1.5 flex items-center justify-center gap-2 w-full text-[#8a5a1a] opacity-80"
+              >
+                <span
+                  className="h-px flex-1"
+                  style={{ background: "linear-gradient(90deg, transparent, #8a5a1a)" }}
+                />
+                <span className="text-[9px]">✦</span>
+                <span
+                  className="h-px flex-1"
+                  style={{ background: "linear-gradient(90deg, #8a5a1a, transparent)" }}
+                />
+              </span>
+            </div>
+          )}
 
           {allLinks.map((link, i, arr) => {
             const active = isActive(link.href);
@@ -245,6 +303,50 @@ export const NavbarMobile = memo(function NavbarMobile() {
               </div>
             );
           })}
+
+          {/* Logout button when logged in */}
+          {session && (
+            <>
+              <span
+                aria-hidden
+                className="flex items-center justify-center gap-2 py-0.5 text-[#8a5a1a] opacity-60"
+              >
+                <span
+                  className="h-px w-8"
+                  style={{ background: "linear-gradient(90deg, transparent, #8a5a1a)" }}
+                />
+                <span className="text-[9px]">✦</span>
+                <span
+                  className="h-px w-8"
+                  style={{ background: "linear-gradient(90deg, #8a5a1a, transparent)" }}
+                />
+              </span>
+              <button
+                onClick={handleSignOut}
+                className="naksha-link naksha-item flex items-center justify-center gap-2 px-3 py-2 rounded-md
+                           text-[15px] uppercase tracking-[0.18em] text-center
+                           transition-all duration-300"
+                style={{
+                  fontWeight: 900,
+                  color: "#8b2020",
+                  background: "transparent",
+                  textShadow: "0 1px 1px rgba(255,245,215,0.6)",
+                  border: "1px solid transparent",
+                  opacity: open ? 1 : 0,
+                  transform: open ? "translateY(0)" : "translateY(-8px)",
+                  transitionDelay: open ? `${50 + allLinks.length * 30}ms` : "0ms",
+                }}
+              >
+                <span aria-hidden className="text-[9px]" style={{ color: "#b8860b" }}>
+                  ◆
+                </span>
+                LOGOUT
+                <span aria-hidden className="text-[9px]" style={{ color: "#b8860b" }}>
+                  ◆
+                </span>
+              </button>
+            </>
+          )}
         </nav>
       </div>
     </div>

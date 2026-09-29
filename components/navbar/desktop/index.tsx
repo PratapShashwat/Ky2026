@@ -3,9 +3,11 @@
 import { memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { primaryLinks, secondaryLinks } from "../config/links.config";
 import { SpiritualIcon } from "./SpiritualIcon";
 import { ShineIcon } from "./ShineIcon";
+import { UserAvatarDropdown } from "../common/UserAvatarDropdown";
 
 /**
  * Desktop Navbar - Primary nav links and secondary links
@@ -13,12 +15,18 @@ import { ShineIcon } from "./ShineIcon";
  */
 export const NavbarDesktop = memo(function NavbarDesktop() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   // Check if a link is active
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
+
+  // Filter out LOGIN link if user is authenticated
+  const filteredSecondaryLinks = session
+    ? secondaryLinks.filter((link) => link.label !== "LOGIN")
+    : secondaryLinks;
 
   return (
     <>
@@ -65,12 +73,12 @@ export const NavbarDesktop = memo(function NavbarDesktop() {
         })}
       </nav>
 
-      {/* SECONDARY LINKS (LOGIN / CONTACT) with spiritual icons */}
+      {/* SECONDARY LINKS (CONTACT + LOGIN/Avatar) with spiritual icons */}
       <div
-        className="absolute right-[3%] inset-y-0 hidden sm:flex items-center gap-4 z-10"
+        className={`absolute inset-y-0 hidden sm:flex items-center gap-4 z-10 ${session ? "right-[0.5%]" : "right-[3%]"}`}
         style={{ transform: "translateY(11%)" }}
       >
-        {secondaryLinks.map((link) => {
+        {filteredSecondaryLinks.map((link) => {
           const active = isActive(link.href);
 
           return (
@@ -97,6 +105,13 @@ export const NavbarDesktop = memo(function NavbarDesktop() {
             </Link>
           );
         })}
+
+        {/* User Avatar (shown when logged in) */}
+        {session?.user && (
+          <div className="ml-3">
+            <UserAvatarDropdown user={session.user} />
+          </div>
+        )}
       </div>
     </>
   );

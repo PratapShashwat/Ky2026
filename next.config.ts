@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "ik.imagekit.io",
         pathname: "/bi3ktgt58/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
     ],
   },
   async headers() {
