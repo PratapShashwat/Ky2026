@@ -11,21 +11,6 @@ export const FlyingBirds = memo(function FlyingBirds({ className = "" }: { class
         xmlns="http://www.w3.org/2000/svg"
         style={{ animation: "flyBirds 20s linear infinite" }}
       >
-        <defs>
-          <style>
-            {`
-              @keyframes flyBirds {
-                0% { transform: translateX(-100%); }
-                100% { transform: translateX(200%); }
-              }
-              @keyframes flapWings {
-                0%, 100% { d: path("M0,5 Q5,0 10,5 Q15,0 20,5"); }
-                50% { d: path("M0,5 Q5,8 10,5 Q15,8 20,5"); }
-              }
-            `}
-          </style>
-        </defs>
-        
         {/* Bird group 1 */}
         <g fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round">
           <path d="M10,20 Q15,15 20,20 Q25,15 30,20">

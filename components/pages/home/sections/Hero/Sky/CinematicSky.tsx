@@ -215,45 +215,6 @@ export const CinematicSky = memo(function CinematicSky({ className = "" }: { cla
           />
         </div>
       ))}
-
-      <style jsx>{`
-        @keyframes starTwinkle {
-          0%, 100% { opacity: 0.25; transform: scale(1); }
-          20% { opacity: 0.5; }
-          40% { opacity: 0.7; transform: scale(1.05); }
-          60% { opacity: 0.4; }
-          80% { opacity: 0.6; transform: scale(1.02); }
-        }
-        @keyframes starTwinkleBright {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          15% { opacity: 0.8; }
-          35% { opacity: 1; transform: scale(1.15); }
-          55% { opacity: 0.75; transform: scale(1.05); }
-          75% { opacity: 0.9; transform: scale(1.1); }
-        }
-        @keyframes shootingStarMove {
-          0% { 
-            opacity: 0; 
-            transform: rotate(var(--angle, 25deg)) translateX(0) scaleX(0.3);
-          }
-          5% { 
-            opacity: 0.6;
-            transform: rotate(var(--angle, 25deg)) translateX(20px) scaleX(0.6);
-          }
-          15% { 
-            opacity: 1; 
-            transform: rotate(var(--angle, 25deg)) translateX(50px) scaleX(1);
-          }
-          70% { 
-            opacity: 0.8;
-            transform: rotate(var(--angle, 25deg)) translateX(var(--travel-distance, 180px)) scaleX(1);
-          }
-          100% { 
-            opacity: 0; 
-            transform: rotate(var(--angle, 25deg)) translateX(calc(var(--travel-distance, 180px) + 50px)) scaleX(0.5);
-          }
-        }
-      `}</style>
     </div>
   );
 });

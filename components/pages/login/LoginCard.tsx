@@ -3,11 +3,10 @@
 import { ROYAL_COLORS } from "./constants";
 
 interface LoginCardProps {
-  isLoading: boolean;
   onGoogleLogin: () => void;
 }
 
-export function LoginCard({ isLoading, onGoogleLogin }: LoginCardProps) {
+export function LoginCard({ onGoogleLogin }: LoginCardProps) {
   return (
     <div
       className="relative w-full max-w-md mx-auto lg:mx-0"
@@ -62,7 +61,7 @@ export function LoginCard({ isLoading, onGoogleLogin }: LoginCardProps) {
         <CardDescription />
 
         {/* Google Sign In Button */}
-        <GoogleSignInButton isLoading={isLoading} onClick={onGoogleLogin} />
+        <GoogleSignInButton onClick={onGoogleLogin} />
 
         {/* Bottom decorative element */}
         <CardFooter />
@@ -185,18 +184,16 @@ function CardDescription() {
 }
 
 interface GoogleSignInButtonProps {
-  isLoading: boolean;
   onClick: () => void;
 }
 
-function GoogleSignInButton({ isLoading, onClick }: GoogleSignInButtonProps) {
+function GoogleSignInButton({ onClick }: GoogleSignInButtonProps) {
   return (
     <div className="relative z-10 space-y-4">
       <button
         type="button"
         onClick={onClick}
-        disabled={isLoading}
-        className="w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-4 transition-all duration-300 hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed group relative overflow-hidden"
+        className="w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-4 transition-all duration-300 hover:scale-[1.02] group relative overflow-hidden"
         style={{
           background: `linear-gradient(135deg, ${ROYAL_COLORS.GOLD} 0%, ${ROYAL_COLORS.GOLD_DARK} 50%, ${ROYAL_COLORS.GOLD} 100%)`,
           color: ROYAL_COLORS.BG_DEEP,

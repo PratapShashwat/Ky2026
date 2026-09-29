@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { NavbarDesign as Navbar } from "@/components/navbar/Design";
 import { AuthErrorToast } from "@/components/toast/error/auth";
 import { AuthSuccessToast } from "@/components/toast/success/auth";
@@ -11,67 +11,84 @@ import { ROYAL_COLORS } from "./constants";
 import { BackgroundEffects } from "./BackgroundEffects";
 import { MysticGateSection } from "./MysticGateSection";
 import { LoginCard } from "./LoginCard";
-import { PageLoader } from "@/components/loader";
 
 export function LoginContent() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>();
   const searchParams = useSearchParams();
 
-  // Check for error or success in URL params (NextAuth redirects with error)
+  
+  // Handle error toast from URL params
   useEffect(() => {
+    const defaultErrorMessage = "Something went wrong. Please try again.";
     const error = searchParams.get("error");
-    const success = searchParams.get("success");
+    if (!error) return;
 
-    if (error) {
-      let message = "Something went wrong. Please try again.";
-      if (error === "OAuthSignin") message = "Error starting authentication.";
-      if (error === "OAuthCallback")
-        message = "Error during authentication callback.";
-      if (error === "OAuthCreateAccount") message = "Could not create account.";
-      if (error === "EmailCreateAccount") message = "Could not create account.";
-      if (error === "Callback") message = "Authentication callback failed.";
-      if (error === "OAuthAccountNotLinked")
-        message = "Email already linked to another account.";
-      if (error === "AccessDenied")
-        message = "Access denied. You may not have permission.";
-
-      toast.custom(() => <AuthErrorToast message={message} />, {
-        duration: 5000,
-        position: "bottom-right",
-      });
-    }
-
-    if (success === "true") {
-      toast.custom(() => <AuthSuccessToast />, {
-        duration: 4000,
-        position: "bottom-right",
-      });
+    switch (error) {
+      case "OAuthSignin":
+        setErrorMessage("Error starting authentication.");
+        break;
+      case "OAuthCallback":
+        setErrorMessage("Error during authentication callback.");
+        break;
+      case "OAuthCreateAccount":
+      case "EmailCreateAccount":
+        setErrorMessage("Could not create account.");
+        break;
+      case "Callback":
+        setErrorMessage("Authentication callback failed.");
+        break;
+      case "OAuthAccountNotLinked":
+        setErrorMessage("Email already linked to another account.");
+        break;
+      case "AccessDenied":
+        setErrorMessage("Access denied. You may not have permission.");
+        break;
+      default:
+        setErrorMessage(defaultErrorMessage);
     }
   }, [searchParams]);
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await signIn("google", { callbackUrl: "/?auth=success" });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Login failed. Please try again.";
-      toast.custom(() => <AuthErrorToast message={message} />, {
+  // Show error toast when errorMessage changes
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const toastId = toast.custom(
+      () => <AuthErrorToast message={errorMessage} />,
+      {
         duration: 5000,
         position: "bottom-right",
-      });
-      setIsLoading(false);
-    }
-  };
+        id: "auth-error",
+      },
+    );
 
-  if (isLoading) {
-    return <PageLoader />;
-  }
+    return () => {
+      setErrorMessage(undefined);
+      toast.dismiss(toastId);
+    };
+  }, [errorMessage]);
+
+  // Handle success toast from URL params
+  useEffect(() => {
+    const success = searchParams.get("success");
+    if (success !== "true") return;
+
+    const toastId = toast.custom(() => <AuthSuccessToast />, {
+      duration: 4000,
+      position: "bottom-right",
+      id: "auth-success",
+    });
+
+    return () => {
+      toast.dismiss(toastId);
+    };
+  }, [searchParams]);
+
+  const handleGoogleLogin = () => {
+    signIn("google", { callbackUrl: "/?auth=success" });
+  };
 
   return (
     <>
-      <Toaster />
-
       {/* Fixed navbar */}
       <div className="fixed inset-x-0 top-0 z-[200]">
         <Navbar position="relative" topOffset={18} />
@@ -93,7 +110,7 @@ export function LoginContent() {
         {/* Main Content Container */}
         <div className="relative w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <MysticGateSection />
-          <LoginCard isLoading={isLoading} onGoogleLogin={handleGoogleLogin} />
+          <LoginCard onGoogleLogin={handleGoogleLogin} />
         </div>
 
         {/* Bottom decorative text - Desktop only */}
@@ -106,31 +123,6 @@ export function LoginContent() {
           </p>
         </div>
       </main>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes pulseSlow {
-          0%,
-          100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.6;
-            transform: scale(1.1);
-          }
-        }
-      `}</style>
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { AuthSuccessToast } from "@/components/toast/success/auth";
 
 export function AuthToastHandler() {
@@ -16,6 +16,7 @@ export function AuthToastHandler() {
       toast.custom(() => <AuthSuccessToast />, {
         duration: 4000,
         position: "bottom-right",
+        id: "auth-success",
       });
 
       // Clean up the URL by removing the auth param
@@ -25,5 +26,5 @@ export function AuthToastHandler() {
     }
   }, [searchParams, router]);
 
-  return <Toaster />;
+  return null;
 }

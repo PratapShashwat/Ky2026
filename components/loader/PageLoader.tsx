@@ -131,18 +131,6 @@ export function PageLoader() {
           Loading
         </p>
       </div>
-
-      {/* Keyframes */}
-      <style jsx>{`
-        @keyframes loaderSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes flameFlicker {
-          0% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
-          100% { transform: scaleY(1.15) scaleX(0.9); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { useAuthenticate } from "./hooks/useAuthenticate";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -13,27 +14,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.email) {
-        const { authenticate } = useAuthenticate();
+        // Extract slugName from email (e.g., srajan.saxena@gmail.com → srajan.saxena)
+        const slugName = user.email.split("@")[0] ?? user.email;
+        
         try {
-          authenticate({
-            id: user.id,
-            email: user.email,
-            firstName: user.name?.split(" ")[0] ?? "",
-            lastName: user.name?.split(" ").slice(1).join(" ") ?? "",
-            avatarUrl: user.image ?? undefined,
+          const response = await fetch(`${BACKEND_URL}/api/v1/user/auth`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: user.id,
+              email: user.email,
+              slugName,
+              avatarUrl: user.image ?? undefined,
+            }),
           });
-          return true;
-        } catch (err: unknown) {
+
           // 409 means user already exists, allow sign-in
-          if (
-            err &&
-            typeof err === "object" &&
-            "status" in err &&
-            err.status === 409
-          ) {
+          if (response.ok || response.status === 409) {
             return true;
           }
 
+          console.error("Auth failed:", await response.text());
+          return false;
+        } catch (err) {
+          console.error("Auth error:", err);
           return false;
         }
       }

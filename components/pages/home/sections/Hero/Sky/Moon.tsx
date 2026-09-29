@@ -253,68 +253,6 @@ export const Moon = memo(function Moon({ className = "", isMobile = false }: { c
         .moon-edge-highlight {
           animation: moonEdgeHighlight 8s ease-in-out infinite;
         }
-
-        @keyframes moonHaloOuter {
-          0%, 100% { opacity: 0.5; transform: scale(4); }
-          50% { opacity: 0.7; transform: scale(4.2); }
-        }
-        @keyframes moonGlowOuter {
-          0%, 100% { opacity: 0.6; transform: scale(2.5); }
-          30% { opacity: 0.75; transform: scale(2.6); }
-          70% { opacity: 0.65; transform: scale(2.55); }
-        }
-        @keyframes moonGlowMiddle {
-          0%, 100% { opacity: 0.7; transform: scale(1.8); }
-          40% { opacity: 0.85; transform: scale(1.85); }
-          60% { opacity: 0.8; transform: scale(1.82); }
-        }
-        @keyframes moonGlowInner {
-          0%, 100% { opacity: 0.8; transform: scale(1.3); }
-          25% { opacity: 0.9; transform: scale(1.32); }
-          50% { opacity: 0.95; transform: scale(1.35); }
-          75% { opacity: 0.85; transform: scale(1.33); }
-        }
-        @keyframes moonCorona {
-          0% { transform: scale(2.2) rotate(0deg); opacity: 0.6; }
-          50% { opacity: 0.8; }
-          100% { transform: scale(2.2) rotate(360deg); opacity: 0.6; }
-        }
-        @keyframes moonSurfacePulse {
-          0%, 100% { 
-            box-shadow: 
-              0 0 30px rgba(255,255,245,0.6),
-              0 0 60px rgba(230,240,255,0.35),
-              0 0 100px rgba(200,210,255,0.2),
-              inset -6px -6px 15px rgba(180,170,150,0.12),
-              inset 3px 3px 10px rgba(255,255,255,0.1);
-          }
-          50% { 
-            box-shadow: 
-              0 0 35px rgba(255,255,245,0.7),
-              0 0 70px rgba(230,240,255,0.4),
-              0 0 110px rgba(200,210,255,0.25),
-              inset -6px -6px 15px rgba(180,170,150,0.12),
-              inset 3px 3px 10px rgba(255,255,255,0.1);
-          }
-        }
-        @keyframes moonLightSweep {
-          0%, 100% { 
-            opacity: 0;
-            transform: translateX(-30%) rotate(105deg);
-          }
-          40%, 60% {
-            opacity: 1;
-            transform: translateX(0%) rotate(105deg);
-          }
-          50% {
-            opacity: 1;
-            transform: translateX(10%) rotate(105deg);
-          }
-        }
-        @keyframes moonEdgeHighlight {
-          0%, 100% { opacity: 0.9; }
-          50% { opacity: 1; }
-        }
       `}</style>
       )}
     </div>

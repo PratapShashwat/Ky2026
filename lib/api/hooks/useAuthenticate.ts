@@ -14,14 +14,8 @@ import { BACKEND_URL } from "../constants";
 interface AuthenticateResponse {
   info: string;
   user: {
-    id: string;
     email: string;
-    firstName: string;
-    lastName: string | null;
-    avatarUrl: string | null;
-    role: "ADMIN" | "STUDENT" | "MENTOR" | "VISITOR";
-    createdAt: string;
-    updatedAt: string;
+    slugName: string;
   };
   isNewUser: boolean;
 }
