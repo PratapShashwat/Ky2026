@@ -1,94 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { NavbarDesign as Navbar } from "@/components/navbar/Design";
-import { AuthErrorToast } from "@/components/toast/error/auth";
-import { AuthSuccessToast } from "@/components/toast/success/auth";
+import { PageLoader } from "@/components/loader";
+import { useSignIn } from "@/lib/api/hooks";
 import { ROYAL_COLORS } from "./constants";
 import { BackgroundEffects } from "./BackgroundEffects";
 import { MysticGateSection } from "./MysticGateSection";
 import { LoginCard } from "./LoginCard";
 
 export function LoginContent() {
-  const [errorMessage, setErrorMessage] = useState<string>();
-  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { isSigningIn, handleSignIn } = useSignIn({
+    callbackUrl: "/?auth=success",
+  });
 
-  
-  // Handle error toast from URL params
+  // Redirect to home if already logged in
   useEffect(() => {
-    const defaultErrorMessage = "Something went wrong. Please try again.";
-    const error = searchParams.get("error");
-    if (!error) return;
-
-    switch (error) {
-      case "OAuthSignin":
-        setErrorMessage("Error starting authentication.");
-        break;
-      case "OAuthCallback":
-        setErrorMessage("Error during authentication callback.");
-        break;
-      case "OAuthCreateAccount":
-      case "EmailCreateAccount":
-        setErrorMessage("Could not create account.");
-        break;
-      case "Callback":
-        setErrorMessage("Authentication callback failed.");
-        break;
-      case "OAuthAccountNotLinked":
-        setErrorMessage("Email already linked to another account.");
-        break;
-      case "AccessDenied":
-        setErrorMessage("Access denied. You may not have permission.");
-        break;
-      default:
-        setErrorMessage(defaultErrorMessage);
+    if (status === "authenticated" && session) {
+      router.replace("/?info=already-logged-in");
+      router.refresh();
     }
-  }, [searchParams]);
+  }, [status, session, router]);
 
-  // Show error toast when errorMessage changes
-  useEffect(() => {
-    if (!errorMessage) return;
-
-    const toastId = toast.custom(
-      () => <AuthErrorToast message={errorMessage} />,
-      {
-        duration: 5000,
-        position: "bottom-right",
-        id: "auth-error",
-      },
-    );
-
-    return () => {
-      setErrorMessage(undefined);
-      toast.dismiss(toastId);
-    };
-  }, [errorMessage]);
-
-  // Handle success toast from URL params
-  useEffect(() => {
-    const success = searchParams.get("success");
-    if (success !== "true") return;
-
-    const toastId = toast.custom(() => <AuthSuccessToast />, {
-      duration: 4000,
-      position: "bottom-right",
-      id: "auth-success",
-    });
-
-    return () => {
-      toast.dismiss(toastId);
-    };
-  }, [searchParams]);
-
-  const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/?auth=success" });
-  };
+  // Show loader while checking session or if already authenticated (redirecting)
+  if (status === "loading" || (status === "authenticated" && session)) {
+    return <PageLoader />;
+  }
 
   return (
     <>
+      {/* Full page loader when signing in */}
+      {isSigningIn && <PageLoader />}
+
       {/* Fixed navbar */}
       <div className="fixed inset-x-0 top-0 z-[200]">
         <Navbar position="relative" topOffset={18} />
@@ -110,7 +57,7 @@ export function LoginContent() {
         {/* Main Content Container */}
         <div className="relative w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <MysticGateSection />
-          <LoginCard onGoogleLogin={handleGoogleLogin} />
+          <LoginCard onGoogleLogin={handleSignIn} />
         </div>
 
         {/* Bottom decorative text - Desktop only */}

@@ -1,22 +1,60 @@
-import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const isProduction = process.env.NODE_ENV === "production";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
-    Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
 
+  cookies: {
+    sessionToken: {
+      name: isProduction
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProduction,
+        // Uncomment for subdomain sharing in production:
+        // domain: isProduction ? ".kashiyatra.com" : undefined,
+      },
+    },
+    callbackUrl: {
+      name: isProduction
+        ? "__Secure-next-auth.callback-url"
+        : "next-auth.callback-url",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProduction,
+      },
+    },
+    csrfToken: {
+      name: isProduction
+        ? "__Host-next-auth.csrf-token"
+        : "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: isProduction,
+      },
+    },
+  },
+
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.email) {
-        // Extract slugName from email (e.g., srajan.saxena@gmail.com → srajan.saxena)
         const slugName = user.email.split("@")[0] ?? user.email;
-        
+
         try {
           const response = await fetch(`${BACKEND_URL}/api/v1/user/auth`, {
             method: "POST",
@@ -31,7 +69,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }),
           });
 
-          // 409 means user already exists, allow sign-in
           if (response.ok || response.status === 409) {
             return true;
           }
@@ -74,11 +111,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
   pages: {
     signIn: "/login",
     error: "/login",
   },
-});
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
