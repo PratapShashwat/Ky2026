@@ -26,7 +26,7 @@ export function ContinueButton() {
 
   return (
     <motion.div
-      className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
+      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
