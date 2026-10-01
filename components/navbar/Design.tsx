@@ -7,6 +7,7 @@ import { NavbarDesktop } from "./desktop";
 import { NavbarMobile } from "./mobile";
 import { NAV_ASPECT } from "./config/links.config";
 import { NavBadge } from "./common/NavBadge";
+import { NavbarProvider } from "./config/NavbarContext";
 
 /**
  * Kashi Yatra ornate Navbar.
@@ -46,46 +47,48 @@ export function NavbarDesign({
   const edgePinned = position === "fixed" || position === "absolute";
 
   return (
-    <header
-      className={`${position} ${edgePinned ? "left-0 right-0" : ""} z-[200] transition-all duration-500 ${className}`}
-      style={{
-        top: position === "relative" ? undefined : topOffset,
-        marginTop: position === "relative" ? topOffset : undefined,
-        filter: scrolled
-          ? "drop-shadow(0 8px 24px rgba(0,0,0,0.55))"
-          : "drop-shadow(0 4px 16px rgba(0,0,0,0.35))",
-      }}
-    >
-      {/* Wrapper keeps the bar centered and constrained on large screens */}
-      <div className="relative mx-auto w-full max-w-[1600px] px-2 sm:px-3 pt-2">
-        {/* The ornate bar — its height is driven by width to preserve aspect */}
-        <div
-          className="relative w-full"
-          style={{
-            aspectRatio: `${NAV_ASPECT}`,
-            minHeight: 56,
-            maxHeight: 85,
-          }}
-        >
-          {/* Background carved bar */}
-          <Image
-            src={IMAGES.navbar.background}
-            alt=""
-            fill
-            priority
-            className="object-fill pointer-events-none select-none"
-          />
+    <NavbarProvider>
+      <header
+        className={`${position} ${edgePinned ? "left-0 right-0" : ""} z-[200] transition-all duration-500 ${className}`}
+        style={{
+          top: position === "relative" ? undefined : topOffset,
+          marginTop: position === "relative" ? topOffset : undefined,
+          filter: scrolled
+            ? "drop-shadow(0 8px 24px rgba(0,0,0,0.55))"
+            : "drop-shadow(0 4px 16px rgba(0,0,0,0.35))",
+        }}
+      >
+        {/* Wrapper keeps the bar centered and constrained on large screens */}
+        <div className="relative mx-auto w-full max-w-[1600px] px-2 sm:px-3 pt-2">
+          {/* The ornate bar — its height is driven by width to preserve aspect */}
+          <div
+            className="relative w-full"
+            style={{
+              aspectRatio: `${NAV_ASPECT}`,
+              minHeight: 56,
+              maxHeight: 85,
+            }}
+          >
+            {/* Background carved bar */}
+            <Image
+              src={IMAGES.navbar.background}
+              alt=""
+              fill
+              priority
+              className="object-fill pointer-events-none select-none"
+            />
 
-          {/* IIT BHU Badge */}
-          <NavBadge />
+            {/* IIT BHU Badge */}
+            <NavBadge />
 
-          {/* Desktop Navigation */}
-          <NavbarDesktop />
+            {/* Desktop Navigation */}
+            <NavbarDesktop />
 
-          {/* Mobile Navigation */}
-          <NavbarMobile />
+            {/* Mobile Navigation */}
+            <NavbarMobile />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </NavbarProvider>
   );
 }

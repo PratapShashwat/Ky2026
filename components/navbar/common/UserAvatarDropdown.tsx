@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -11,7 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Loader2 } from "lucide-react";
+import { useSignOut } from "@/lib/api/hooks";
 
 interface UserAvatarDropdownProps {
   user: {
@@ -23,6 +23,7 @@ interface UserAvatarDropdownProps {
 
 export function UserAvatarDropdown({ user }: UserAvatarDropdownProps) {
   const [imageError, setImageError] = useState(false);
+  const { isSigningOut, handleSignOut } = useSignOut();
 
   const initials =
     user.name
@@ -36,10 +37,6 @@ export function UserAvatarDropdown({ user }: UserAvatarDropdownProps) {
   const slugName = user.email?.split("@")[0] || "user";
   const displaySlug =
     slugName.length > 10 ? `${slugName.slice(0, 10)}..` : slugName;
-
-  const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
-  };
 
   const showImage = user.image && !imageError;
 
@@ -160,11 +157,16 @@ export function UserAvatarDropdown({ user }: UserAvatarDropdownProps) {
         {/* Logout */}
         <DropdownMenuItem
           onClick={handleSignOut}
-          className="flex items-center gap-2 cursor-pointer px-3 py-2 transition-colors focus:bg-[rgba(255,100,100,0.1)] rounded-md mx-1"
+          disabled={isSigningOut}
+          className="flex items-center gap-2 cursor-pointer px-3 py-2 transition-colors focus:bg-[rgba(255,100,100,0.1)] rounded-md mx-1 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ color: "rgba(255,100,100,0.9)" }}
         >
-          <LogOut className="h-4 w-4" />
-          <span>Logout</span>
+          {isSigningOut ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <LogOut className="h-4 w-4" />
+          )}
+          <span>{isSigningOut ? "Signing out..." : "Logout"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

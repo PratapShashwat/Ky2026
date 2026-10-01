@@ -2,9 +2,8 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { primaryLinks, secondaryLinks } from "../config/links.config";
+import { Spinner } from "@/components/ui/spinner";
+import { useNavbar } from "../config/NavbarContext";
 import { SpiritualIcon } from "./SpiritualIcon";
 import { ShineIcon } from "./ShineIcon";
 import { UserAvatarDropdown } from "../common/UserAvatarDropdown";
@@ -14,25 +13,20 @@ import { UserAvatarDropdown } from "../common/UserAvatarDropdown";
  * Hidden on mobile (sm:flex)
  */
 export const NavbarDesktop = memo(function NavbarDesktop() {
-  const pathname = usePathname();
-  const { data: session } = useSession();
-
-  // Check if a link is active
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
-
-  // Filter out LOGIN link if user is authenticated
-  const filteredSecondaryLinks = session
-    ? secondaryLinks.filter((link) => link.label !== "LOGIN")
-    : secondaryLinks;
+  const { 
+    isActive, 
+    isSessionLoading,
+    isAuthenticated, 
+    user, 
+    primaryLinks, 
+    secondaryLinks 
+  } = useNavbar();
 
   return (
     <>
       {/* PRIMARY NAV — centered on the bar midline */}
       <nav
-        className="absolute left-[19%] right-[26%] inset-y-0 hidden sm:flex items-center justify-center gap-4 z-10"
+        className="absolute left-[22%] right-[26%] inset-y-0 hidden sm:flex items-center justify-center gap-4 z-10"
         aria-label="Primary"
         style={{ transform: "translateY(8%)" }}
       >
@@ -42,14 +36,14 @@ export const NavbarDesktop = memo(function NavbarDesktop() {
             <Link
               key={link.label}
               href={link.href}
-              className="nav-pill group flex items-center gap-1.5 lg:gap-2
-                         px-3 lg:px-4 py-1 lg:py-1.5 rounded-full
-                         tracking-[0.12em] uppercase whitespace-nowrap
+              className="nav-pill group flex items-center gap-1 lg:gap-1.5
+                         px-2 lg:px-3 py-0.5 lg:py-1 rounded-full
+                         tracking-[0.1em] uppercase whitespace-nowrap
                          transition-all duration-300 hover:scale-[1.05]"
               style={{
                 fontFamily: "var(--font-ethereal), serif",
                 fontWeight: 900,
-                fontSize: "clamp(12px, 1.05vw, 18px)",
+                fontSize: "clamp(10px, 0.85vw, 14px)",
                 color: active ? "#3a1505" : "#3a1505",
                 background: active
                   ? "linear-gradient(135deg, rgba(255,215,0,0.85) 0%, rgba(255,180,0,0.75) 30%, rgba(255,230,100,0.9) 50%, rgba(255,180,0,0.75) 70%, rgba(255,215,0,0.85) 100%)"
@@ -75,22 +69,23 @@ export const NavbarDesktop = memo(function NavbarDesktop() {
 
       {/* SECONDARY LINKS (CONTACT + LOGIN/Avatar) with spiritual icons */}
       <div
-        className={`absolute inset-y-0 hidden sm:flex items-center gap-4 z-10 ${session ? "right-[0.5%]" : "right-[3%]"}`}
+        className={`absolute inset-y-0 hidden sm:flex items-center gap-4 z-10 ${isAuthenticated ? "right-[0.5%]" : "right-[3%]"}`}
         style={{ transform: "translateY(11%)" }}
       >
-        {filteredSecondaryLinks.map((link) => {
+        {secondaryLinks.map((link) => {
           const active = isActive(link.href);
+          const isLoginLink = link.label === "LOGIN";
 
           return (
             <Link
               key={link.label}
               href={link.href}
               className={`group flex items-center gap-1.5 lg:gap-2 tracking-[0.1em] uppercase whitespace-nowrap
-                         transition-all duration-300 ${link.label === "LOGIN" ? "ml-3" : ""}`}
+                         transition-all duration-300 hover:scale-[1.08] ${isLoginLink ? "ml-3" : ""}`}
               style={{
                 fontFamily: "var(--font-ethereal), serif",
                 fontWeight: 900,
-                fontSize: "clamp(12px, 1vw, 17px)",
+                fontSize: "clamp(10px, 0.85vw, 14px)",
                 color: active ? "#5c1a08" : "#3a1505",
                 textShadow: active
                   ? "0 0 12px rgba(255,100,50,0.7), 0 0 25px rgba(255,80,30,0.5)"
@@ -100,18 +95,24 @@ export const NavbarDesktop = memo(function NavbarDesktop() {
                   : undefined,
               }}
             >
-              <SpiritualIcon kind={link.icon} />
-              {link.label}
+              <SpiritualIcon kind={link.icon} className="transition-transform duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(255,215,0,0.8)]" />
+              <span className="transition-all duration-300 group-hover:text-[#5c1a08] group-hover:drop-shadow-[0_0_10px_rgba(255,180,0,0.6)]">
+                {isLoginLink && isSessionLoading ? (
+                  <Spinner className="size-3" />
+                ) : (
+                  link.label
+                )}
+              </span>
             </Link>
           );
         })}
 
         {/* User Avatar (shown when logged in) */}
-        {session?.user && (
+        {isSessionLoading ? null : isAuthenticated && user ? (
           <div className="ml-3">
-            <UserAvatarDropdown user={session.user} />
+            <UserAvatarDropdown user={user} />
           </div>
-        )}
+        ) : null}
       </div>
     </>
   );

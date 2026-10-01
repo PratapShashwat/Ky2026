@@ -1,13 +1,12 @@
 
-
 /**
  * Small spiritual / ethereal glyph beside secondary links.
  */
-export function SpiritualIcon({ kind }: { kind: "om" | "lotus" }) {
+export function SpiritualIcon({ kind, className = "" }: { kind: "om" | "lotus"; className?: string }) {
   return (
     <span
       aria-hidden
-      className="spirit-icon relative inline-flex items-center justify-center shrink-0"
+      className={`spirit-icon relative inline-flex items-center justify-center shrink-0 ${className}`}
       style={{
         width: "clamp(15px, 1.3vw, 22px)",
         height: "clamp(15px, 1.3vw, 22px)",

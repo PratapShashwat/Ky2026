@@ -2,10 +2,10 @@
 
 import { memo, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { primaryLinks, secondaryLinks } from "../config/links.config";
+import { Spinner } from "@/components/ui/spinner";
+import { useNavbar } from "../config/NavbarContext";
+import { useSignOut } from "@/lib/api/hooks";
 
 /**
  * Mobile Navbar - Hamburger menu with dropdown panel
@@ -13,36 +13,21 @@ import { primaryLinks, secondaryLinks } from "../config/links.config";
  */
 export const NavbarMobile = memo(function NavbarMobile() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const { data: session } = useSession();
+  const { 
+    isActive, 
+    isSessionLoading,
+    isAuthenticated, 
+    user, 
+    userInitials, 
+    allLinks 
+  } = useNavbar();
+  const { isSigningOut, handleSignOut: signOutFn } = useSignOut();
 
-  // Check if a link is active
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
-
-  // Filter out LOGIN link if user is authenticated, add PROFILE instead
-  const authLinks = session
-    ? [
-        ...secondaryLinks.filter((link) => link.label !== "LOGIN"),
-        { label: "PROFILE", href: "/profile", icon: "om" as const },
-      ]
-    : secondaryLinks;
-
-  const allLinks = [...primaryLinks, ...authLinks];
-
+  // Wrap signOut to also close menu
   const handleSignOut = () => {
     setOpen(false);
-    signOut({ callbackUrl: "/" });
+    signOutFn();
   };
-
-  const initials = session?.user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) || "U";
 
   return (
     <div className="sm:hidden">
@@ -163,18 +148,18 @@ export const NavbarMobile = memo(function NavbarMobile() {
           style={{ fontFamily: "var(--font-ethereal), serif" }}
         >
           {/* User info header when logged in */}
-          {session?.user ? (
+          {isAuthenticated && user ? (
             <div className="flex items-center gap-3 pb-3 mb-2 border-b border-[#8a5a1a]/30">
               <div 
                 className="h-10 w-10 rounded-full overflow-hidden border-2 border-[#d4a853] flex items-center justify-center"
                 style={{
-                  background: session.user.image ? "transparent" : "linear-gradient(135deg, #d4a853 0%, #8b6914 100%)",
+                  background: user.image ? "transparent" : "linear-gradient(135deg, #d4a853 0%, #8b6914 100%)",
                 }}
               >
-                {session.user.image ? (
+                {user.image ? (
                   <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
+                    src={user.image}
+                    alt={user.name || "User"}
                     width={40}
                     height={40}
                     className="h-full w-full object-cover"
@@ -182,16 +167,16 @@ export const NavbarMobile = memo(function NavbarMobile() {
                   />
                 ) : (
                   <span className="text-sm font-bold" style={{ color: "#1a0a05" }}>
-                    {initials}
+                    {userInitials}
                   </span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold truncate" style={{ color: "#3a1505" }}>
-                  {session.user.name}
+                  {user.name}
                 </p>
                 <p className="text-xs truncate" style={{ color: "#6b3f14" }}>
-                  {session.user.email}
+                  {user.email}
                 </p>
               </div>
             </div>
@@ -235,6 +220,7 @@ export const NavbarMobile = memo(function NavbarMobile() {
 
           {allLinks.map((link, i, arr) => {
             const active = isActive(link.href);
+            const isLoginLink = link.label === "LOGIN";
             return (
               <div key={link.label} className="flex flex-col">
                 <Link
@@ -271,7 +257,7 @@ export const NavbarMobile = memo(function NavbarMobile() {
                   >
                     {active ? "✦" : "◆"}
                   </span>
-                  {link.label}
+                  {isLoginLink && isSessionLoading ? <Spinner className="size-4" /> : link.label}
                   <span 
                     aria-hidden 
                     className="text-[9px]"
@@ -305,7 +291,7 @@ export const NavbarMobile = memo(function NavbarMobile() {
           })}
 
           {/* Logout button when logged in */}
-          {session && (
+          {isAuthenticated && (
             <>
               <span
                 aria-hidden
@@ -323,9 +309,10 @@ export const NavbarMobile = memo(function NavbarMobile() {
               </span>
               <button
                 onClick={handleSignOut}
+                disabled={isSigningOut}
                 className="naksha-link naksha-item flex items-center justify-center gap-2 px-3 py-2 rounded-md
                            text-[15px] uppercase tracking-[0.18em] text-center
-                           transition-all duration-300"
+                           transition-all duration-300 disabled:opacity-50"
                 style={{
                   fontWeight: 900,
                   color: "#8b2020",
@@ -337,13 +324,22 @@ export const NavbarMobile = memo(function NavbarMobile() {
                   transitionDelay: open ? `${50 + allLinks.length * 30}ms` : "0ms",
                 }}
               >
-                <span aria-hidden className="text-[9px]" style={{ color: "#b8860b" }}>
-                  ◆
-                </span>
-                LOGOUT
-                <span aria-hidden className="text-[9px]" style={{ color: "#b8860b" }}>
-                  ◆
-                </span>
+                {isSigningOut ? (
+                  <>
+                    <Spinner className="size-4" />
+                    SIGNING OUT...
+                  </>
+                ) : (
+                  <>
+                    <span aria-hidden className="text-[9px]" style={{ color: "#b8860b" }}>
+                      ◆
+                    </span>
+                    LOGOUT
+                    <span aria-hidden className="text-[9px]" style={{ color: "#b8860b" }}>
+                      ◆
+                    </span>
+                  </>
+                )}
               </button>
             </>
           )}
