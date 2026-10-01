@@ -26,7 +26,7 @@ export function ContinueButton() {
 
   return (
     <motion.div
-      className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20"
+      className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
@@ -175,30 +175,6 @@ export function ContinueButton() {
           }}
         />
       </motion.button>
-
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-      >
-        <span className="text-xs text-amber-200/50">Click to continue</span>
-        <motion.div
-          animate={{ y: [0, 5, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M8 3 L8 13 M4 9 L8 13 L12 9"
-              stroke="rgba(255, 200, 100, 0.5)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </motion.div>
-      </motion.div>
     </motion.div>
   );
 }
