@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import Image from "next/image";
 import { CONCERT_COLORS, Artist } from "../constants";
 import { EqualizerBars } from "./EqualizerBars";
 
@@ -42,6 +43,46 @@ const MysterySilhouette = memo(function MysterySilhouette({
       <div className="absolute top-2 right-2 w-3 h-3 border-r-2 border-t-2" style={{ borderColor: `${accentColor}60` }} />
       <div className="absolute bottom-2 left-2 w-3 h-3 border-l-2 border-b-2" style={{ borderColor: `${accentColor}60` }} />
       <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2" style={{ borderColor: `${accentColor}60` }} />
+    </div>
+  );
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// REVEALED ARTIST IMAGE - Shows actual artist photo
+// ═══════════════════════════════════════════════════════════════════
+const RevealedArtist = memo(function RevealedArtist({
+  image,
+  name,
+  accentColor,
+  isHeadliner,
+}: {
+  image: string;
+  name: string;
+  accentColor: string;
+  isHeadliner: boolean;
+}) {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <Image
+        src={image}
+        alt={name}
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-110"
+      />
+      {/* Gradient overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(to top, rgba(10,5,20,0.9) 0%, rgba(10,5,20,0.3) 40%, transparent 100%)`,
+        }}
+      />
+      {/* Accent glow at bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-1/3"
+        style={{
+          background: `linear-gradient(to top, ${accentColor}30, transparent)`,
+        }}
+      />
     </div>
   );
 });
@@ -92,7 +133,7 @@ export const HeadlinerCard = memo(function HeadlinerCard({
           </div>
         </div>
         
-        {/* Silhouette */}
+        {/* Silhouette or Image */}
         <div
           className="relative mx-auto mb-4 w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden"
           style={{
@@ -100,7 +141,11 @@ export const HeadlinerCard = memo(function HeadlinerCard({
             border: `2px solid ${accentColor}30`,
           }}
         >
-          <MysterySilhouette accentColor={accentColor} isHeadliner={true} />
+          {artist.isRevealed && artist.image ? (
+            <RevealedArtist image={artist.image} name={artist.name} accentColor={accentColor} isHeadliner={true} />
+          ) : (
+            <MysterySilhouette accentColor={accentColor} isHeadliner={true} />
+          )}
         </div>
         
         {/* Name */}
@@ -115,16 +160,18 @@ export const HeadlinerCard = memo(function HeadlinerCard({
           <EqualizerBars color={accentColor} size="lg" />
         </div>
         
-        <p className="text-center text-xs mt-3 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Reveal Coming Soon
-        </p>
+        {!artist.isRevealed && (
+          <p className="text-center text-xs mt-3 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Reveal Coming Soon
+          </p>
+        )}
       </div>
     </div>
   );
 });
 
 // ═══════════════════════════════════════════════════════════════════
-// FEATURING CARD - Smaller supporting card
+// FEATURING CARD - Smaller supporting card (Previous Lineups)
 // ═══════════════════════════════════════════════════════════════════
 export const FeaturingCard = memo(function FeaturingCard({ 
   artist, 
@@ -157,21 +204,25 @@ export const FeaturingCard = memo(function FeaturingCard({
       >
         {/* Genre tag */}
         <div
-          className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+          className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider z-10"
           style={{ background: `${accentColor}20`, color: accentColor, border: `1px solid ${accentColor}40` }}
         >
-          {artist.genre}
+          {artist.isRevealed ? "PREVIOUS" : artist.genre}
         </div>
         
-        {/* Silhouette */}
+        {/* Image or Silhouette */}
         <div
-          className="relative mx-auto mb-3 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden"
+          className="relative mx-auto mb-3 w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden"
           style={{
             background: `linear-gradient(180deg, ${accentColor}15 0%, ${CONCERT_COLORS.STAGE_DARK} 100%)`,
             border: `1px solid ${accentColor}20`,
           }}
         >
-          <MysterySilhouette accentColor={accentColor} isHeadliner={false} />
+          {artist.isRevealed && artist.image ? (
+            <RevealedArtist image={artist.image} name={artist.name} accentColor={accentColor} isHeadliner={false} />
+          ) : (
+            <MysterySilhouette accentColor={accentColor} isHeadliner={false} />
+          )}
         </div>
         
         {/* Name */}

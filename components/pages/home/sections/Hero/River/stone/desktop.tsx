@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { useSession } from "next-auth/react";
 import {
   Z_HERO,
   POS_STONES,
@@ -13,6 +14,10 @@ import { SteppingStone } from "./SteppingStone";
  * Uses sm positions and desktop sizes from constants
  */
 export const StonesDesktop = memo(function StonesDesktop() {
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
+  const isLoggedIn = !!session?.user;
+
   return (
     <>
       {/* Schedule - left side */}
@@ -49,7 +54,7 @@ export const StonesDesktop = memo(function StonesDesktop() {
         />
       </div>
 
-      {/* Register - center (main CTA) */}
+      {/* Register/Profile - center (main CTA) */}
       <div
         className="absolute pointer-events-auto opacity-0 sm:opacity-100"
         style={{
@@ -60,10 +65,11 @@ export const StonesDesktop = memo(function StonesDesktop() {
         }}
       >
         <SteppingStone
-          label="Register"
-          href="/login"
+          label={isLoading ? undefined : (isLoggedIn ? "Profile" : "Register")}
+          href={isLoggedIn ? "/profile" : "/login"}
           size={SIZE_STONES.REGISTER.desktop}
           phase={-1.6}
+          loadingSpinner={isLoading}
         />
       </div>
 

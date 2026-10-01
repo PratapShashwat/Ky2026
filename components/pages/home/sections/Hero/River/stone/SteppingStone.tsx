@@ -3,6 +3,7 @@
 import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Spinner } from "@/components/ui/spinner";
 import type { CSSProperties } from "react";
 import { getAnimStyle } from "./helper/constant";
 import { IMAGES } from "@/lib/images";
@@ -19,6 +20,8 @@ interface SteppingStoneProps {
   zIndex?: number;
   className?: string;
   style?: CSSProperties;
+  /** Show loading spinner instead of label */
+  loadingSpinner?: boolean;
 }
 
 export const SteppingStone = memo(function SteppingStone({
@@ -30,6 +33,7 @@ export const SteppingStone = memo(function SteppingStone({
   zIndex,
   className = "",
   style,
+  loadingSpinner = false,
 }: SteppingStoneProps) {
   const animStyle = getAnimStyle({
     phase,
@@ -78,8 +82,12 @@ export const SteppingStone = memo(function SteppingStone({
           className="stone-img object-contain select-none pointer-events-none relative"
           style={{ filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.55))" }}
         />
-        {/* Label */}
-        {label && (
+        {/* Label or Loading Spinner */}
+        {loadingSpinner ? (
+          <span className="absolute inset-0 flex items-center justify-center pb-1">
+            <Spinner className="size-4 sm:size-5 text-amber-100" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.9))" }} />
+          </span>
+        ) : label ? (
           <span
             className="stone-label absolute inset-0 flex items-center justify-center text-center font-bold text-amber-100 uppercase text-[8px] sm:text-[15px] tracking-wide pb-1"
             style={{
@@ -89,7 +97,7 @@ export const SteppingStone = memo(function SteppingStone({
           >
             {label}
           </span>
-        )}
+        ) : null}
       </span>
     </span>
   );

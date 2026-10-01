@@ -153,28 +153,18 @@ function FestHighlightsContent() {
       {/* Background Mandala - smaller on mobile */}
       <BackgroundMandala isAnimating={isAnimating} />
 
-      {/* Floating Decorative Elements - hidden on mobile */}
+      {/* Floating Decorative Elements - hidden on mobile, reduced count */}
       <div
         ref={decorRef}
         className="hidden sm:block absolute inset-0 pointer-events-none overflow-hidden z-30"
       >
-        {/* Trishuls - hidden on small mobile */}
-        <div className="decor-item hidden sm:block absolute top-[10%] left-[5%] w-8 sm:w-10 md:w-12 h-16 sm:h-20 md:h-24 text-[#FFD700] opacity-30">
-          <Trishul className="w-full h-full" />
-        </div>
-        <div className="decor-item hidden sm:block absolute top-[15%] right-[5%] w-8 sm:w-10 h-16 sm:h-20 text-[#FF6B00] opacity-25">
+        {/* Single Trishul - top left */}
+        <div className="decor-item hidden lg:block absolute top-[12%] left-[6%] w-10 h-20 text-[#FFD700] opacity-25">
           <Trishul className="w-full h-full" />
         </div>
 
-        {/* Diyas removed */}
-
-        {/* Floating Bells removed (TempleBells with SHM remain) */}
-
-        {/* Lotus - hidden on small mobile */}
-        <div className="decor-item hidden sm:block absolute bottom-[5%] left-[15%] w-14 sm:w-16 md:w-20 h-8 sm:h-10 md:h-12 opacity-50">
-          <LotusSVG className="w-full h-full" />
-        </div>
-        <div className="decor-item hidden sm:block absolute top-[5%] right-[15%] w-12 sm:w-16 h-8 sm:h-10 opacity-40">
+        {/* Single Lotus - bottom right */}
+        <div className="decor-item hidden lg:block absolute bottom-[10%] right-[10%] w-16 h-10 opacity-40">
           <LotusSVG className="w-full h-full" />
         </div>
       </div>
@@ -213,20 +203,20 @@ function FestHighlightsContent() {
           }}
         />
 
-        {/* Energy rings behind temple */}
+        {/* Energy rings behind temple - reduced to 2 */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(2)].map((_, i) => (
             <div
               key={i}
               className="absolute rounded-full border"
               style={{
-                width: 500 + i * 150,
-                height: 500 + i * 150,
-                left: -(250 + i * 75),
-                top: -(250 + i * 75),
-                borderColor: `rgba(255,107,0,${0.25 - i * 0.06})`,
-                animation: `pulseRing ${3 + i}s ease-out infinite`,
-                animationDelay: `${i * 0.4}s`,
+                width: 500 + i * 200,
+                height: 500 + i * 200,
+                left: -(250 + i * 100),
+                top: -(250 + i * 100),
+                borderColor: `rgba(255,107,0,${0.2 - i * 0.08})`,
+                animation: `pulseRing ${3 + i * 1.5}s ease-out infinite`,
+                animationDelay: `${i * 0.5}s`,
               }}
             />
           ))}
