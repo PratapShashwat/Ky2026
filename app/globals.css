@@ -1596,3 +1596,28 @@ body {
   0%, 100% { opacity: 0.2; }
   50% { opacity: 0.35; }
 }
+
+/* ── ProNites: Floating elements animations (Desktop only) ── */
+@keyframes floatNote1 {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+@keyframes floatNote2 {
+  0%, 100% { transform: translateY(0) rotate(5deg); }
+  50% { transform: translateY(-25px) rotate(-5deg); }
+}
+@keyframes floatNote3 {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-15px) translateX(10px); }
+  66% { transform: translateY(-10px) translateX(-5px); }
+}
+@keyframes floatStar {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 0.5; }
+}
+@keyframes floatOrb {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-30px) translateX(15px); }
+  50% { transform: translateY(-10px) translateX(25px); }
+  75% { transform: translateY(-40px) translateX(10px); }
+}

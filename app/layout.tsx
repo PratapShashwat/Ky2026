@@ -7,7 +7,7 @@ import "./globals.css";
 import GsapRegistration from "@/lib/GsapRegistration";
 import { SmoothScroll } from "@/lib/SmoothScroll";
 import { PageLoader } from "@/components/loader";
-import { AuthProvider, QueryProvider } from "@/components/providers";
+import { AuthProvider, QueryProvider, ApolloProvider } from "@/components/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +37,9 @@ export const metadata: Metadata = {
     "Varanasi",
     "College Fest",
   ],
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -47,17 +50,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Toaster />
-        <QueryProvider>
-          <AuthProvider>
-            <GsapRegistration />
-            <Suspense fallback={null}>
-              <PageLoader />
-            </Suspense>
-            <MotionConfig reducedMotion="user">
-              <SmoothScroll>{children}</SmoothScroll>
-            </MotionConfig>
-          </AuthProvider>
-        </QueryProvider>
+        <ApolloProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <GsapRegistration />
+              <Suspense fallback={null}>
+                <PageLoader />
+              </Suspense>
+              <MotionConfig reducedMotion="user">
+                <SmoothScroll>{children}</SmoothScroll>
+              </MotionConfig>
+            </AuthProvider>
+          </QueryProvider>
+        </ApolloProvider>
       </body>
     </html>
   );

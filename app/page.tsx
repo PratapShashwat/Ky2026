@@ -13,7 +13,8 @@ import { AuthToastHandler } from "@/components/auth";
 export default function Home() {
   return (
     <main>
-      {/* Auth toast handler for success message after login */}
+      {/* Centralized auth toast handler - handles sign-in/sign-out toasts
+          Must be wrapped in Suspense because it uses useSearchParams */}
       <Suspense fallback={null}>
         <AuthToastHandler />
       </Suspense>
