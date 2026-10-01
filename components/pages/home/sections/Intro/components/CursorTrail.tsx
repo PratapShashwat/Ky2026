@@ -11,12 +11,24 @@ interface TrailPoint {
 
 /**
  * Magical cursor trail effect for intro section
+ * DISABLED on mobile/touch devices
  */
 export function CursorTrail() {
   const [trails, setTrails] = useState<TrailPoint[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
+    // Detect touch device - no cursor trail needed
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth < 768;
+    setIsTouchDevice(hasTouch || isSmallScreen);
+  }, []);
+
+  useEffect(() => {
+    // Don't add listeners on touch devices
+    if (isTouchDevice) return;
+
     let idCounter = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -42,20 +54,21 @@ export function CursorTrail() {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, []);
+  }, [isTouchDevice]);
 
   // Auto-remove old trail points
   useEffect(() => {
-    if (trails.length === 0) return;
+    if (trails.length === 0 || isTouchDevice) return;
 
     const timer = setTimeout(() => {
       setTrails((prev) => prev.slice(1));
     }, 80);
 
     return () => clearTimeout(timer);
-  }, [trails]);
+  }, [trails, isTouchDevice]);
 
-  if (!isVisible) return null;
+  // Don't render on touch devices
+  if (isTouchDevice || !isVisible) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[100]">

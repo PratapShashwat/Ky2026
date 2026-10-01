@@ -3,20 +3,23 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useIntro } from "../context/IntroContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 /**
  * Stage background with ZOOM and GLOW effect when holding
+ * MOBILE: Simplified - no streaks, no wave rings, minimal effects
  */
 export function StageBackground() {
   const { phase, loadProgress } = useIntro();
+  const isMobile = useIsMobile();
 
   if (phase === "video" || phase === "complete") return null;
 
   const isLoading = phase === "loading";
   const intensity = loadProgress / 100;
   
-  // ZOOM: FAST - aggressive zoom effect
-  const zoomScale = 1 + intensity * 1.2;
+  // ZOOM: Reduced on mobile
+  const zoomScale = isMobile ? 1 + intensity * 0.5 : 1 + intensity * 1.2;
 
   return (
     <motion.div
@@ -38,11 +41,11 @@ export function StageBackground() {
       >
         {/* Image with brightness/saturation filter */}
         <div 
-          className="absolute inset-0 transition-all duration-75"
+          className="absolute inset-0 transition-all duration-100"
           style={{
             filter: isLoading 
-              ? `brightness(${1 + intensity * 0.8}) saturate(${1 + intensity * 1.2}) contrast(${1 + intensity * 0.15})`
-              : "brightness(1) saturate(1) contrast(1)",
+              ? `brightness(${1 + intensity * 0.5}) saturate(${1 + intensity * 0.8})`
+              : "brightness(1) saturate(1)",
           }}
         >
           <Image
@@ -54,8 +57,8 @@ export function StageBackground() {
           />
         </div>
         
-        {/* Golden glow overlay on image */}
-        {isLoading && (
+        {/* Golden glow overlay - DESKTOP ONLY */}
+        {!isMobile && isLoading && (
           <motion.div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -70,21 +73,21 @@ export function StageBackground() {
         )}
       </motion.div>
       
-      {/* Tunnel vignette - gets tighter faster */}
+      {/* Tunnel vignette */}
       <div 
-        className="absolute inset-0 pointer-events-none transition-all duration-75"
+        className="absolute inset-0 pointer-events-none transition-all duration-100"
         style={{
           background: isLoading
             ? `radial-gradient(circle at center, 
-                transparent ${Math.max(0, 12 - intensity * 15)}%, 
-                rgba(0,0,0,${0.5 + intensity * 0.45}) ${Math.max(15, 35 - intensity * 30)}%, 
-                rgba(0,0,0,0.97) 100%)`
+                transparent ${Math.max(0, 15 - intensity * 10)}%, 
+                rgba(0,0,0,${0.5 + intensity * 0.4}) ${Math.max(20, 40 - intensity * 25)}%, 
+                rgba(0,0,0,0.95) 100%)`
             : "radial-gradient(circle at center, transparent 18%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.88) 100%)"
         }}
       />
 
-      {/* Speed streaks for tunnel effect */}
-      {isLoading && intensity > 0.08 && (
+      {/* Speed streaks - DESKTOP ONLY */}
+      {!isMobile && isLoading && intensity > 0.08 && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle) => (
             <motion.div
@@ -115,8 +118,8 @@ export function StageBackground() {
         </div>
       )}
 
-      {/* Expanding wave rings */}
-      {isLoading && (
+      {/* Expanding wave rings - DESKTOP ONLY */}
+      {!isMobile && isLoading && (
         <>
           {[0, 1, 2].map((i) => (
             <motion.div
@@ -143,8 +146,8 @@ export function StageBackground() {
         </>
       )}
 
-      {/* Center energy buildup */}
-      {isLoading && (
+      {/* Center energy buildup - DESKTOP ONLY */}
+      {!isMobile && isLoading && (
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
           style={{
@@ -164,8 +167,8 @@ export function StageBackground() {
         />
       )}
 
-      {/* Corner flares at high intensity */}
-      {isLoading && intensity > 0.3 && (
+      {/* Corner flares - DESKTOP ONLY */}
+      {!isMobile && isLoading && intensity > 0.3 && (
         <>
           <motion.div
             className="absolute top-0 left-0 w-80 h-80 pointer-events-none"
@@ -188,8 +191,8 @@ export function StageBackground() {
         </>
       )}
 
-      {/* Subtle idle glow */}
-      {phase === "idle" && (
+      {/* Subtle idle glow - DESKTOP ONLY */}
+      {!isMobile && phase === "idle" && (
         <motion.div
           className="absolute inset-0 pointer-events-none"
           animate={{ opacity: [0.08, 0.15, 0.08] }}

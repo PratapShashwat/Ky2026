@@ -1,14 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIntro } from "../context/IntroContext";
 
 export function BlastEffect() {
   const { phase, startVideo } = useIntro();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Detect mobile
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth < 768;
+    setIsMobile(hasTouch || isSmallScreen);
+
     if (typeof window !== "undefined") {
       audioRef.current = new Audio("/audio/explosion.mp3");
       audioRef.current.volume = 0.5;
@@ -26,13 +32,54 @@ export function BlastEffect() {
       // Transition to video after blast animation completes
       const timer = setTimeout(() => {
         startVideo();
-      }, 1800);
+      }, isMobile ? 1200 : 1800); // Faster on mobile
       return () => clearTimeout(timer);
     }
-  }, [phase, startVideo]);
+  }, [phase, startVideo, isMobile]);
 
   if (phase !== "blasting") return null;
 
+  // MOBILE: Simplified blast effect
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
+        {/* Core bright flash */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            background: "radial-gradient(circle, #FFFFFF 0%, #FFD700 40%, transparent 70%)",
+          }}
+          initial={{ width: 0, height: 0, opacity: 1 }}
+          animate={{
+            width: ["0vw", "300vw"],
+            height: ["0vw", "300vw"],
+            opacity: [1, 0],
+          }}
+          transition={{
+            duration: 1,
+            ease: "easeOut",
+          }}
+        />
+
+        {/* Single golden ring */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-amber-400"
+          initial={{ width: 0, height: 0, opacity: 1 }}
+          animate={{
+            width: ["0vw", "200vw"],
+            height: ["0vw", "200vw"],
+            opacity: [1, 0],
+          }}
+          transition={{
+            duration: 1,
+            ease: "easeOut",
+          }}
+        />
+      </div>
+    );
+  }
+
+  // DESKTOP: Full blast effect
   return (
     <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
       {/* Core bright flash */}
