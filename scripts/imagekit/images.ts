@@ -113,4 +113,75 @@ export const IMAGES_TO_UPLOAD: ImageToUpload[] = [
   // LOGIN PAGE - All common
   // ============================================
   { localFile: "login/common/mysticGate.png", remoteName: "mystic-gate.png", folder: "/login/common" },
+
+  // ============================================
+  // SINGERS / ARTISTS - Pro Nites
+  // ============================================
+  { localFile: "singer/jubinNautiyal.webp", remoteName: "jubin-nautiyal.webp", folder: "/singers" },
+  { localFile: "singer/darshanRawal.webp", remoteName: "darshan-rawal.webp", folder: "/singers" },
+  { localFile: "singer/MohitChauhan.webp", remoteName: "mohit-chauhan.webp", folder: "/singers" },
+  { localFile: "singer/vishal-shekhar.webp", remoteName: "vishal-shekhar.webp", folder: "/singers" },
+  { localFile: "singer/raftaar.jpeg", remoteName: "raftaar.jpeg", folder: "/singers" },
+  { localFile: "singer/ritviz.jpg", remoteName: "ritviz.jpg", folder: "/singers" },
+  { localFile: "singer/anubhav bassi.jpeg", remoteName: "anubhav-bassi.jpeg", folder: "/singers" },
+  { localFile: "singer/MJ5-group.jpeg", remoteName: "mj5-group.jpeg", folder: "/singers" },
+
+  // ============================================
+  // SPONSORS
+  // ============================================
+  // Title & Co-Title
+  { localFile: "sponsor/title_sponsor.jpeg", remoteName: "title-sponsor.jpeg", folder: "/sponsors" },
+  { localFile: "sponsor/Co-title partner.png", remoteName: "co-title-partner.png", folder: "/sponsors" },
+  
+  // Powered By Partners
+  { localFile: "sponsor/Powered-by partner.jpg", remoteName: "powered-by-partner.jpg", folder: "/sponsors" },
+  { localFile: "sponsor/Co-powered by partner.png", remoteName: "co-powered-by-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/adani Co-powered by partner.png", remoteName: "adani-co-powered-partner.png", folder: "/sponsors" },
+  
+  // Major & Event Sponsors
+  { localFile: "sponsor/Major sponsor.jpg", remoteName: "major-sponsor.jpg", folder: "/sponsors" },
+  { localFile: "sponsor/Event Title-Crosswindz.jpg", remoteName: "event-title-crosswindz.jpg", folder: "/sponsors" },
+  { localFile: "sponsor/title of Enquizta & Samvad.jpg", remoteName: "title-enquizta-samvad.jpg", folder: "/sponsors" },
+  
+  // Industry Partners
+  { localFile: "sponsor/Energy partner.png", remoteName: "energy-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Steel partner.png", remoteName: "steel-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Build partner.png", remoteName: "build-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Construction partner.webp", remoteName: "construction-partner.webp", folder: "/sponsors" },
+  { localFile: "sponsor/Infrastructure Partner.png", remoteName: "infrastructure-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Real-estate partner.jpeg", remoteName: "real-estate-partner.jpeg", folder: "/sponsors" },
+  { localFile: "sponsor/Development partner.png", remoteName: "development-partner.png", folder: "/sponsors" },
+  
+  // Social & CSR Partners
+  { localFile: "sponsor/NMDC Sustainability partner.jpg", remoteName: "nmdc-sustainability-partner.jpg", folder: "/sponsors" },
+  { localFile: "sponsor/CSR Partner.png", remoteName: "csr-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Social Welfare partner.png", remoteName: "social-welfare-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Nation-Building Partner.png", remoteName: "nation-building-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Community_Partner.png", remoteName: "community-partner.png", folder: "/sponsors" },
+  
+  // Hospitality & Lifestyle Partners
+  { localFile: "sponsor/Hospitatlity Partner.jpeg", remoteName: "hospitality-partner.jpeg", folder: "/sponsors" },
+  { localFile: "sponsor/Coffee partner.png", remoteName: "coffee-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Chocolate partner.png", remoteName: "chocolate-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/fragnance partner.jpg", remoteName: "fragrance-partner.jpg", folder: "/sponsors" },
+  { localFile: "sponsor/Saree_partner.jpg", remoteName: "saree-partner.jpg", folder: "/sponsors" },
+  
+  // Media & Tech Partners
+  { localFile: "sponsor/Gaming Partner.png", remoteName: "gaming-partner.png", folder: "/sponsors" },
+  { localFile: "sponsor/Official Music Streaming partner.webp", remoteName: "music-streaming-partner.webp", folder: "/sponsors" },
+  { localFile: "sponsor/Innovation Partner.webp", remoteName: "innovation-partner.webp", folder: "/sponsors" },
+  { localFile: "sponsor/Dalimss news, Official Partner.webp", remoteName: "dalimss-news-partner.webp", folder: "/sponsors" },
+  { localFile: "sponsor/the vibe official partner.png", remoteName: "the-vibe-partner.png", folder: "/sponsors" },
+
+  // ============================================
+  // PROFILE PAGE - Decorative elements
+  // ============================================
+  { localFile: "profile/common/profileDecorativeCorner.png", remoteName: "decorative-corner.png", folder: "/profile/common" },
+  { localFile: "profile/common/profileDivider.png", remoteName: "divider.png", folder: "/profile/common" },
+
+  // ============================================
+  // SPONSORS PAGE - Decorative elements
+  // ============================================
+  { localFile: "sponsors/common/sponsorOrnamentalDivider.png", remoteName: "ornamental-divider.png", folder: "/sponsors/decorative" },
+  { localFile: "sponsors/common/sponsorRectangularFrame.png", remoteName: "rectangular-frame.png", folder: "/sponsors/decorative" },
 ];

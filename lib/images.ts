@@ -152,6 +152,81 @@ export const IMAGES = {
   login: {
     mysticGate: `${IMAGEKIT_BASE}/login/common/mystic-gate.png`,
   },
+
+  // ============================================
+  // PROFILE PAGE - Decorative elements
+  // ============================================
+  profile: {
+    decorativeCorner: `${IMAGEKIT_BASE}/profile/common/decorative-corner.png`,
+    divider: `${IMAGEKIT_BASE}/profile/common/divider.png`,
+  },
+
+  // ============================================
+  // SINGERS / ARTISTS - Pro Nites
+  // ============================================
+  singers: {
+    jubinNautiyal: `${IMAGEKIT_BASE}/singers/jubin-nautiyal.webp`,
+    darshanRawal: `${IMAGEKIT_BASE}/singers/darshan-rawal.webp`,
+    mohitChauhan: `${IMAGEKIT_BASE}/singers/mohit-chauhan.webp`,
+    vishalShekhar: `${IMAGEKIT_BASE}/singers/vishal-shekhar.webp`,
+    raftaar: `${IMAGEKIT_BASE}/singers/raftaar.jpeg`,
+    ritviz: `${IMAGEKIT_BASE}/singers/ritviz.jpg`,
+    anubhavBassi: `${IMAGEKIT_BASE}/singers/anubhav-bassi.jpeg`,
+    mj5: `${IMAGEKIT_BASE}/singers/mj5-group.jpeg`,
+  },
+
+  // ============================================
+  // SPONSORS
+  // ============================================
+  sponsors: {
+    // Decorative elements
+    ornamentalDivider: `${IMAGEKIT_BASE}/sponsors/decorative/ornamental-divider.png`,
+    rectangularFrame: `${IMAGEKIT_BASE}/sponsors/decorative/rectangular-frame.png`,
+    
+    // Title & Co-Title
+    titleSponsor: `${IMAGEKIT_BASE}/sponsors/title-sponsor.jpeg`,
+    coTitlePartner: `${IMAGEKIT_BASE}/sponsors/co-title-partner.png`,
+    
+    // Powered By Partners
+    poweredByPartner: `${IMAGEKIT_BASE}/sponsors/powered-by-partner.jpg`,
+    coPoweredByPartner: `${IMAGEKIT_BASE}/sponsors/co-powered-by-partner.png`,
+    adaniCoPoweredPartner: `${IMAGEKIT_BASE}/sponsors/adani-co-powered-partner.png`,
+    
+    // Major & Event Sponsors
+    majorSponsor: `${IMAGEKIT_BASE}/sponsors/major-sponsor.jpg`,
+    eventTitleCrosswindz: `${IMAGEKIT_BASE}/sponsors/event-title-crosswindz.jpg`,
+    titleEnquiztaSamvad: `${IMAGEKIT_BASE}/sponsors/title-enquizta-samvad.jpg`,
+    
+    // Industry Partners
+    energyPartner: `${IMAGEKIT_BASE}/sponsors/energy-partner.png`,
+    steelPartner: `${IMAGEKIT_BASE}/sponsors/steel-partner.png`,
+    buildPartner: `${IMAGEKIT_BASE}/sponsors/build-partner.png`,
+    constructionPartner: `${IMAGEKIT_BASE}/sponsors/construction-partner.webp`,
+    infrastructurePartner: `${IMAGEKIT_BASE}/sponsors/infrastructure-partner.png`,
+    realEstatePartner: `${IMAGEKIT_BASE}/sponsors/real-estate-partner.jpeg`,
+    developmentPartner: `${IMAGEKIT_BASE}/sponsors/development-partner.png`,
+    
+    // Social & CSR Partners
+    nmdcSustainabilityPartner: `${IMAGEKIT_BASE}/sponsors/nmdc-sustainability-partner.jpg`,
+    csrPartner: `${IMAGEKIT_BASE}/sponsors/csr-partner.png`,
+    socialWelfarePartner: `${IMAGEKIT_BASE}/sponsors/social-welfare-partner.png`,
+    nationBuildingPartner: `${IMAGEKIT_BASE}/sponsors/nation-building-partner.png`,
+    communityPartner: `${IMAGEKIT_BASE}/sponsors/community-partner.png`,
+    
+    // Hospitality & Lifestyle Partners
+    hospitalityPartner: `${IMAGEKIT_BASE}/sponsors/hospitality-partner.jpeg`,
+    coffeePartner: `${IMAGEKIT_BASE}/sponsors/coffee-partner.png`,
+    chocolatePartner: `${IMAGEKIT_BASE}/sponsors/chocolate-partner.png`,
+    fragrancePartner: `${IMAGEKIT_BASE}/sponsors/fragrance-partner.jpg`,
+    sareePartner: `${IMAGEKIT_BASE}/sponsors/saree-partner.jpg`,
+    
+    // Media & Tech Partners
+    gamingPartner: `${IMAGEKIT_BASE}/sponsors/gaming-partner.png`,
+    musicStreamingPartner: `${IMAGEKIT_BASE}/sponsors/music-streaming-partner.webp`,
+    innovationPartner: `${IMAGEKIT_BASE}/sponsors/innovation-partner.webp`,
+    dalimssNewsPartner: `${IMAGEKIT_BASE}/sponsors/dalimss-news-partner.webp`,
+    theVibePartner: `${IMAGEKIT_BASE}/sponsors/the-vibe-partner.png`,
+  },
 } as const;
 
 /**
