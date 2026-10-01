@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { EVENT_CATEGORIES } from "@/components/pages/events/config/events.config";
 import { COLORS, JAZZ_COLORS } from "@/components/pages/home/constants/palette";
 import { NavbarDesign as Navbar } from "@/components/navbar/Design";
@@ -181,8 +182,11 @@ const PageTitle = memo(function PageTitle() {
 
       {/* Download Rulebook Button */}
       <div className="mt-8">
-        <a
-          href="#"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            toast.info("PDF will be available soon!");
+          }}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105"
           style={{
             background: `linear-gradient(135deg, ${JAZZ_COLORS.HOT_PINK}80 0%, ${JAZZ_COLORS.ROYAL_PURPLE}80 100%)`,
@@ -205,7 +209,7 @@ const PageTitle = memo(function PageTitle() {
             />
           </svg>
           Download Rulebook
-        </a>
+        </button>
       </div>
     </div>
   );
