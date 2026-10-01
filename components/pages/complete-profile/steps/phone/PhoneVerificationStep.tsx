@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { Phone, ArrowLeft, Loader2, CheckCircle2, Send } from "lucide-react";
+import { Phone, Loader2, CheckCircle2, Send } from "lucide-react";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import type { E164Number } from "libphonenumber-js/core";
 import { useSendOtp, useVerifyOtp } from "@/lib/api/hooks";
@@ -21,9 +21,7 @@ const RESEND_COOLDOWN = 60; // seconds
 // ═══════════════════════════════════════════════════════════════════
 
 interface PhoneVerificationStepProps {
-  onVerified: (phone: string) => void;
-  onBack: () => void;
-  existingPhone?: string;
+  refetchProgress: () => void;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -31,14 +29,10 @@ interface PhoneVerificationStepProps {
 // ═══════════════════════════════════════════════════════════════════
 
 export function PhoneVerificationStep({
-  onVerified,
-  onBack,
-  existingPhone,
+  refetchProgress,
 }: PhoneVerificationStepProps) {
   const { data: session } = useSession();
-  const [phoneNumber, setPhoneNumber] = useState<E164Number | undefined>(
-    existingPhone as E164Number | undefined
-  );
+  const [phoneNumber, setPhoneNumber] = useState<E164Number | undefined>(undefined);
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +83,7 @@ export function PhoneVerificationStep({
       { body: { phoneNumber, otp } },
       {
         onSuccess: () => {
-          onVerified(phoneNumber);
+          refetchProgress();
         },
         onError: (err: Error) => {
           setError(err.message || "Invalid OTP");
@@ -97,7 +91,7 @@ export function PhoneVerificationStep({
         },
       }
     );
-  }, [otp, phoneNumber, verifyOtp, onVerified]);
+  }, [otp, phoneNumber, verifyOtp, refetchProgress]);
 
   // Handle resend
   const handleResend = useCallback(() => {
@@ -248,22 +242,6 @@ export function PhoneVerificationStep({
 
       {/* Error Message */}
       {error && <VerificationError message={error} />}
-
-      {/* Back Button (only in phone step) */}
-      {step === "phone" && (
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center gap-2 mx-auto px-6 py-3 rounded-xl font-medium transition-all hover:scale-[1.02]"
-          style={{
-            background: COLORS.BG_ROYAL,
-            border: `1px solid ${COLORS.GOLD}30`,
-            color: COLORS.CREAM,
-          }}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </button>
-      )}
     </div>
   );
 }

@@ -227,6 +227,14 @@ export const IMAGES = {
     dalimssNewsPartner: `${IMAGEKIT_BASE}/sponsors/dalimss-news-partner.webp`,
     theVibePartner: `${IMAGEKIT_BASE}/sponsors/the-vibe-partner.png`,
   },
+
+  // ============================================
+  // INTRO SECTION - Mascot and assets
+  // ============================================
+  intro: {
+    cuteBoyMascot: `${IMAGEKIT_BASE}/intro/common/cute-boy-mascot.png`,
+    logo: `${IMAGEKIT_BASE}/intro/common/intro-logo.png`,
+  },
 } as const;
 
 /**

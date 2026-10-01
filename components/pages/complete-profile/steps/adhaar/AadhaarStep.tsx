@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback } from "react";
-import { useSession } from "next-auth/react";
-import { Upload, X, FileImage, Shield } from "lucide-react";
-import { Dropzone, useDropzoneState } from "@/components/ui/dropzone";
-import { useAadhaarFlow, type AadhaarExtractedData } from "@/lib/api/hooks";
-import { COLORS } from "../../constants/palette";
 import { AadhaarVerificationLoader } from "@/components/loader";
-import { VerificationError, UploadError } from "./error";
+import { Dropzone, useDropzoneState } from "@/components/ui/dropzone";
+import { useAadhaarFlow } from "@/lib/api/hooks";
+import { FileImage, Shield, Upload, X } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useCallback } from "react";
+import { COLORS } from "../../constants/palette";
+import { UploadError, VerificationError } from "./error";
 import { SuccessState } from "./success/SuccessState";
 
 // ═══════════════════════════════════════════════════════════════════
@@ -21,18 +21,14 @@ const ACCEPTED_TYPES = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════════
-
-interface AadhaarStepProps {
-  onComplete: (data: AadhaarExtractedData) => void;
-}
-
-// ═══════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════
 
-export function AadhaarStep({ onComplete }: AadhaarStepProps) {
+export function AadhaarStep({
+  refetchProgress,
+}: {
+  refetchProgress: () => void;
+}) {
   const { data: session } = useSession();
 
   // Dropzone state
@@ -50,6 +46,7 @@ export function AadhaarStep({ onComplete }: AadhaarStepProps) {
     processAadhaar,
     isLoading,
     errorMessage,
+    adhaarVerified,
     extractedData,
     reset: resetAadhaarFlow,
   } = useAadhaarFlow(session?.user?.id);
@@ -72,8 +69,10 @@ export function AadhaarStep({ onComplete }: AadhaarStepProps) {
   }, [resetAadhaarFlow, handleVerify]);
 
   const handleConfirm = useCallback(() => {
-    if (extractedData) onComplete(extractedData.data);
-  }, [extractedData, onComplete]);
+    if (adhaarVerified) {
+      refetchProgress();
+    }
+  }, [extractedData]);
 
   // ─── Render: Loading ───────────────────────────────────────────────
 

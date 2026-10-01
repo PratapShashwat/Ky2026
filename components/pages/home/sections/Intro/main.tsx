@@ -7,9 +7,10 @@ import {
   BlastEffect,
   VideoPlayer,
   StageBackground,
-  ContinueButton,
   FloatingElements,
   CursorTrail,
+  MuteButton,
+  NavigationDrawer,
 } from "./components";
 import "./styles/cursor.css";
 
@@ -60,15 +61,18 @@ export function IntroSection() {
         )}
       </AnimatePresence>
 
-      {/* Continue button - shows during video phase */}
-      <ContinueButton />
-
       {/* Skip button - only during idle and loading */}
       <AnimatePresence>
         {(phase === "idle" || phase === "loading") && (
           <SkipButton />
         )}
       </AnimatePresence>
+
+      {/* Mute button - shows when audio is playing */}
+      <MuteButton />
+
+      {/* Navigation drawer - shows during video phase */}
+      <NavigationDrawer />
     </section>
   );
 }

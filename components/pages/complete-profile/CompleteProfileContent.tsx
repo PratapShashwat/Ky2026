@@ -1,88 +1,48 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { NavbarDesign as Navbar } from "@/components/navbar/Design";
+import {
+  MyAccountProgressQuery,
+  MyAccountProgressResponseType,
+} from "@/lib/api/graphql/queries/user.queries";
+import { useQuery } from "@apollo/client/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Footer from "./Footer";
+import { StepperIndicator } from "./StepperIndicator";
+import { STEPS } from "./config/data";
+import { COLORS } from "./constants/palette";
 import { AadhaarStep } from "./steps/adhaar/AadhaarStep";
 import { CollegeDetailsStep } from "./steps/college/CollegeDetailsStep";
 import { PhoneVerificationStep } from "./steps/phone/PhoneVerificationStep";
-import { StepperIndicator } from "./StepperIndicator";
-import { COLORS } from "./constants/palette";
-import { STEPS } from "./config/data";
-import type { AadhaarExtractedData } from "@/lib/api/hooks";
-
-// ═══════════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════════
-interface CompleteProfileContentProps {
-  user: {
-    id?: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
-}
 
 // ═══════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════
-export function CompleteProfileContent({ user }: CompleteProfileContentProps) {
+export function CompleteProfileContent() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [currentStep, setCurrentStep] = useState<null | number>(null);
+  const {
+    data,
+    loading: stepLoading,
+    error,
+    refetch: refetchProgress,
+  } = useQuery<MyAccountProgressResponseType>(MyAccountProgressQuery, {
+    fetchPolicy: "cache-first",
+  });
 
-  // Shared state across steps
-  const [aadhaarData, setAadhaarData] = useState<AadhaarExtractedData | null>(
-    null,
-  );
-  const [selectedCollege, setSelectedCollege] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-
-  // Step navigation
-  const goToNextStep = useCallback(() => {
-    setCompletedSteps((prev) => new Set(prev).add(currentStep));
-    if (currentStep < STEPS.length) {
-      setCurrentStep((prev) => prev + 1);
+  useEffect(() => {
+    if (data?.myAccount?.progress.currentStep !== undefined) {
+      setCurrentStep(data.myAccount.progress.currentStep);
     }
-  }, [currentStep]);
+  }, [data]);
 
-  const goToPreviousStep = useCallback(() => {
-    if (currentStep > 1) {
-      setCurrentStep((prev) => prev - 1);
-    }
-  }, [currentStep]);
+  if (stepLoading) {
+    return;
+  }
 
-  const handleComplete = useCallback(() => {
-    setCompletedSteps((prev) => new Set(prev).add(currentStep));
-    router.push("/profile");
-  }, [currentStep, router]);
-
-  // Handle Aadhaar complete - step 1 done, move to step 2
-  const handleAadhaarComplete = useCallback(
-    (data: AadhaarExtractedData) => {
-      setAadhaarData(data);
-      goToNextStep();
-    },
-    [goToNextStep],
-  );
-
-  // Handle College selection from Step 2
-  const handleCollegeSubmit = useCallback(
-    (college: string) => {
-      setSelectedCollege(college);
-      goToNextStep();
-    },
-    [goToNextStep],
-  );
-
-  // Handle Phone verification from Step 3
-  const handlePhoneVerified = useCallback(
-    (phone: string) => {
-      setPhoneNumber(phone);
-      handleComplete();
-    },
-    [handleComplete],
-  );
+  if (error) {
+  }
 
   return (
     <>
@@ -124,8 +84,8 @@ export function CompleteProfileContent({ user }: CompleteProfileContentProps) {
           <div className="mb-10">
             <StepperIndicator
               steps={STEPS}
-              currentStep={currentStep}
-              completedSteps={completedSteps}
+              currentStep={data?.myAccount?.progress.currentStep}
+              completedSteps={data?.myAccount?.progress.completedSteps}
             />
           </div>
 
@@ -148,50 +108,14 @@ export function CompleteProfileContent({ user }: CompleteProfileContentProps) {
 
             <div className="p-6 sm:p-10">
               {/* Step Content */}
-              {currentStep === 1 && (
-                <AadhaarStep onComplete={handleAadhaarComplete} />
-              )}
-
-              {currentStep === 2 && (
-                <CollegeDetailsStep
-                  onSubmit={handleCollegeSubmit}
-                  onBack={goToPreviousStep}
-                  existingCollege={selectedCollege}
-                />
-              )}
-
-              {currentStep === 3 && (
-                <PhoneVerificationStep
-                  onVerified={handlePhoneVerified}
-                  onBack={goToPreviousStep}
-                  existingPhone={phoneNumber}
-                />
-              )}
+              {currentStep === 1 && <AadhaarStep refetchProgress={refetchProgress} />}
+              {currentStep === 2 && <CollegeDetailsStep refetchProgress={refetchProgress} />}
+              {currentStep === 3 && <PhoneVerificationStep refetchProgress={refetchProgress} />}
             </div>
           </div>
 
           {/* Footer Decoration */}
-          <div className="mt-10 flex items-center justify-center gap-4">
-            <div
-              className="h-px w-20"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${COLORS.GOLD}40)`,
-              }}
-            />
-            <span className="text-2xl">🪔</span>
-            <div
-              className="h-px w-20"
-              style={{
-                background: `linear-gradient(90deg, ${COLORS.GOLD}40, transparent)`,
-              }}
-            />
-          </div>
-          <p
-            className="text-center text-xs mt-3 tracking-widest uppercase"
-            style={{ color: `${COLORS.GOLD}50` }}
-          >
-            Your data is secure and encrypted
-          </p>
+          <Footer />
         </div>
       </main>
     </>

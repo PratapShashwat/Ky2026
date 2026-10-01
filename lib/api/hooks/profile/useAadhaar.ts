@@ -181,7 +181,7 @@ export function useAadhaarFlow(userId?: string) {
   const { getUploadUrl, isPending: isGettingUrl, reset: resetUploadUrl } = useAadhaarUploadUrl();
 
   // Step 3: Verify Aadhaar hook
-  const { verifyAadhaar, extractedData, isPending: isVerifying, reset: resetVerify } =
+  const { verifyAadhaar, extractedData, isPending: isVerifying, isSuccess : adhaarVerified ,reset: resetVerify } =
     useAadhaarVerify();
 
   // Combined loading state
@@ -276,6 +276,7 @@ export function useAadhaarFlow(userId?: string) {
     processAadhaar,
     reset,
     // State
+    adhaarVerified,
     isLoading,
     errorMessage,
     extractedData,

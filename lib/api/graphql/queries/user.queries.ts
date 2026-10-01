@@ -54,6 +54,7 @@ const myAccountProgressQuery = query("GetMyAccountProgress", {
         college: types.boolean,
         phone: types.boolean,
       },
+      currentStep: types.number,
       completedSteps: types.number,
       totalSteps: types.number,
       isProfileComplete: types.boolean,

@@ -10,5 +10,5 @@ export default async function CompleteProfilePage() {
     redirect("/login");
   }
 
-  return <CompleteProfileContent user={session.user} />;
+  return <CompleteProfileContent />;
 }

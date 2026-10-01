@@ -5,44 +5,22 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useIntro } from "../context/IntroContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 
-const HOLD_DURATION = 2000; // 2 seconds
+const HOLD_DURATION = 3500; // 3.5 seconds
 
 export function EnterButton() {
   const { phase, loadProgress, startLoading, cancelLoading, startBlast, setLoadProgress } = useIntro();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const completeAudioRef = useRef<HTMLAudioElement | null>(null);
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      audioRef.current = new Audio("/audio/charge.mp3");
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.4;
-      
-      completeAudioRef.current = new Audio("/audio/whoosh.mp3");
-      completeAudioRef.current.volume = 0.6;
-    }
-    
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
 
   const handleMouseDown = useCallback(() => {
     if (phase !== "idle") return;
     
     startLoading();
-    
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
-    }
 
     const startTime = Date.now();
+    // MOBILE: 80ms interval, DESKTOP: 50ms
+    const interval = isMobile ? 80 : 50;
+    
     intervalRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min((elapsed / HOLD_DURATION) * 100, 100);
@@ -53,16 +31,10 @@ export function EnterButton() {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
-        if (audioRef.current) {
-          audioRef.current.pause();
-        }
-        if (completeAudioRef.current) {
-          completeAudioRef.current.play().catch(() => {});
-        }
         startBlast();
       }
-    }, 30);
-  }, [phase, startLoading, setLoadProgress, startBlast]);
+    }, interval);
+  }, [phase, startLoading, setLoadProgress, startBlast, isMobile]);
 
   const handleMouseUp = useCallback(() => {
     if (phase !== "loading") return;
@@ -70,9 +42,6 @@ export function EnterButton() {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
-    }
-    if (audioRef.current) {
-      audioRef.current.pause();
     }
     cancelLoading();
   }, [phase, cancelLoading]);
@@ -92,6 +61,102 @@ export function EnterButton() {
   
   const [isHovered, setIsHovered] = useState(false);
 
+  // MOBILE: Ultra simplified version
+  if (isMobile) {
+    return (
+      <motion.div
+        className="relative cursor-pointer select-none"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+      >
+        {/* Simple glow - no animation */}
+        <div
+          className="absolute rounded-full"
+          style={{
+            inset: -15,
+            background: `radial-gradient(circle, rgba(255, 200, 100, ${isLoading ? 0.4 : 0.2}) 0%, transparent 70%)`,
+            filter: "blur(8px)",
+          }}
+        />
+
+        {/* Main SVG Button - no filters, no shimmer */}
+        <svg width="130" height="130" viewBox="0 0 140 140" className="relative z-10">
+          <defs>
+            <linearGradient id="progressGoldM" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFD700" />
+              <stop offset="100%" stopColor="#FF8C00" />
+            </linearGradient>
+            
+            <linearGradient id="textGoldM" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFF8DC" />
+              <stop offset="100%" stopColor="#DAA520" />
+            </linearGradient>
+          </defs>
+
+          {/* Background track */}
+          <circle
+            cx="70" cy="70" r="58"
+            fill="none"
+            stroke="rgba(255, 200, 100, 0.15)"
+            strokeWidth="2"
+          />
+          
+          {/* Progress circle - the only animated thing */}
+          <circle
+            cx="70" cy="70" r="58"
+            fill="none"
+            stroke="url(#progressGoldM)"
+            strokeWidth={isLoading ? 4 : 2}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            transform="rotate(-90 70 70)"
+          />
+
+          {/* Inner circle */}
+          <circle
+            cx="70" cy="70" r="50"
+            fill="rgba(20, 15, 40, 0.9)"
+            stroke="rgba(255, 200, 100, 0.4)"
+            strokeWidth="1"
+          />
+
+          {/* Text */}
+          <text
+            x="70" y={isLoading ? "65" : "70"}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="url(#textGoldM)"
+            fontSize="15"
+            fontWeight="400"
+            letterSpacing="4"
+            style={{ fontFamily: "inherit" }}
+          >
+            {isLoading ? "HOLD" : "ENTER"}
+          </text>
+
+          {/* Loading percentage */}
+          {isLoading && (
+            <text
+              x="70" y="88"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="rgba(255, 200, 100, 0.8)"
+              fontSize="12"
+              style={{ fontFamily: "inherit" }}
+            >
+              {Math.round(loadProgress)}%
+            </text>
+          )}
+        </svg>
+      </motion.div>
+    );
+  }
+
+  // DESKTOP: Full animated version
   return (
     <motion.div
       className="relative cursor-pointer select-none"
@@ -110,8 +175,8 @@ export function EnterButton() {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Hover glow effect - DESKTOP ONLY */}
-      {!isMobile && isHovered && !isLoading && (
+      {/* Hover glow effect */}
+      {isHovered && !isLoading && (
         <motion.div
           className="absolute rounded-full pointer-events-none"
           style={{
@@ -126,31 +191,27 @@ export function EnterButton() {
         />
       )}
       
-      {/* Outer glow aura - Simplified on mobile */}
+      {/* Outer glow aura */}
       <motion.div
         className="absolute rounded-full"
         style={{
           inset: -25,
           background: `radial-gradient(circle, rgba(255, 200, 100, ${isLoading ? 0.25 + intensity * 0.3 : 0.15}) 0%, transparent 70%)`,
-          filter: isMobile ? "blur(8px)" : "blur(12px)",
+          filter: "blur(12px)",
         }}
-        animate={isMobile ? {
-          // MOBILE: Static, just opacity change
-          opacity: isLoading ? 0.8 : 0.5,
-        } : {
-          // DESKTOP: Full animation
+        animate={{
           scale: isLoading ? [1, 1.3, 1] : [1, 1.15, 1],
           opacity: isLoading ? [0.6, 1, 0.6] : [0.5, 0.7, 0.5],
         }}
         transition={{
           duration: isLoading ? 0.4 : 2,
-          repeat: isMobile ? 0 : Infinity,
+          repeat: Infinity,
           ease: "easeInOut",
         }}
       />
 
-      {/* Pulsing emission rings - DESKTOP ONLY */}
-      {!isMobile && [0, 1, 2].map((i) => (
+      {/* Pulsing emission rings */}
+      {[0, 1, 2].map((i) => (
         <motion.div
           key={`pulse-${i}`}
           className="absolute rounded-full pointer-events-none"
@@ -168,30 +229,9 @@ export function EnterButton() {
             repeat: Infinity, 
             delay: i * (isLoading ? 0.3 : 0.6), 
             ease: [0.25, 0.1, 0.25, 1],
-            repeatDelay: 0,
           }}
         />
       ))}
-
-      {/* MOBILE: Single simple ring */}
-      {isMobile && isLoading && (
-        <motion.div
-          className="absolute rounded-full pointer-events-none"
-          style={{ 
-            inset: 0,
-            border: "2px solid rgba(255, 200, 100, 0.5)",
-          }}
-          animate={{ 
-            scale: [1, 2], 
-            opacity: [0.5, 0] 
-          }}
-          transition={{ 
-            duration: 1, 
-            repeat: Infinity, 
-            ease: "easeOut",
-          }}
-        />
-      )}
 
       {/* Main SVG Button */}
       <svg width="140" height="140" viewBox="0 0 140 140" className="relative z-10">
@@ -240,7 +280,7 @@ export function EnterButton() {
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           transform="rotate(-90 70 70)"
-          filter={isMobile ? undefined : "url(#softGlow)"}
+          filter="url(#softGlow)"
         />
 
         {/* Inner circle */}
@@ -251,20 +291,18 @@ export function EnterButton() {
           strokeWidth="1.5"
         />
 
-        {/* Rotating shimmer accent - DESKTOP ONLY */}
-        {!isMobile && (
-          <motion.circle
-            cx="70" cy="70" r="50"
-            fill="none"
-            stroke="rgba(255, 255, 255, 0.25)"
-            strokeWidth="1.5"
-            strokeDasharray="20 75"
-            strokeLinecap="round"
-            animate={{ rotate: 360 }}
-            transition={{ duration: isLoading ? 2 : 8, repeat: Infinity, ease: "linear" }}
-            style={{ transformOrigin: "70px 70px" }}
-          />
-        )}
+        {/* Rotating shimmer */}
+        <motion.circle
+          cx="70" cy="70" r="50"
+          fill="none"
+          stroke="rgba(255, 255, 255, 0.25)"
+          strokeWidth="1.5"
+          strokeDasharray="20 75"
+          strokeLinecap="round"
+          animate={{ rotate: 360 }}
+          transition={{ duration: isLoading ? 2 : 8, repeat: Infinity, ease: "linear" }}
+          style={{ transformOrigin: "70px 70px" }}
+        />
 
         {/* Text */}
         <text
@@ -275,7 +313,7 @@ export function EnterButton() {
           fontSize="16"
           fontWeight="400"
           letterSpacing="5"
-          filter={isMobile ? undefined : "url(#softGlow)"}
+          filter="url(#softGlow)"
           style={{ fontFamily: "inherit" }}
         >
           {isLoading ? "HOLD" : "ENTER"}
@@ -297,8 +335,8 @@ export function EnterButton() {
         )}
       </svg>
 
-      {/* Sparkle dots around button - DESKTOP ONLY */}
-      {!isMobile && [0, 60, 120, 180, 240, 300].map((angle) => {
+      {/* Sparkle dots */}
+      {[0, 60, 120, 180, 240, 300].map((angle) => {
         const radian = (angle * Math.PI) / 180;
         const radius = 80;
         const x = Math.cos(radian) * radius;
@@ -328,8 +366,8 @@ export function EnterButton() {
         );
       })}
 
-      {/* EMISSION PARTICLES - DESKTOP ONLY */}
-      {!isMobile && [0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+      {/* Emission particles */}
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
         const radian = (angle * Math.PI) / 180;
         const distance = isLoading ? 60 + intensity * 40 : 45;
         return (
@@ -355,7 +393,6 @@ export function EnterButton() {
               repeat: Infinity,
               delay: (angle / 360) * (isLoading ? 0.7 : 1.8),
               ease: [0.25, 0.1, 0.25, 1],
-              repeatDelay: 0,
             }}
           />
         );

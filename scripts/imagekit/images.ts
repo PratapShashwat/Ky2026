@@ -184,4 +184,10 @@ export const IMAGES_TO_UPLOAD: ImageToUpload[] = [
   // ============================================
   { localFile: "sponsors/common/sponsorOrnamentalDivider.png", remoteName: "ornamental-divider.png", folder: "/sponsors/decorative" },
   { localFile: "sponsors/common/sponsorRectangularFrame.png", remoteName: "rectangular-frame.png", folder: "/sponsors/decorative" },
+
+  // ============================================
+  // INTRO SECTION - Mascot and assets
+  // ============================================
+  { localFile: "intro/cuteBoy.png", remoteName: "cute-boy-mascot.png", folder: "/intro/common" },
+  { localFile: "intro/introLogo.png", remoteName: "intro-logo.png", folder: "/intro/common" },
 ];

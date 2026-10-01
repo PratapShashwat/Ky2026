@@ -1,14 +1,18 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 // ═══════════════════════════════════════════════════════════════════
 // PROFILE PAGE LOADER
-// Themed loader for Kashi Yatra profile page
+// Modern concert/festival vibe loader for Kashi Yatra
 // ═══════════════════════════════════════════════════════════════════
 
 const COLORS = {
   BG_DEEP: "#0a0612",
   BG_ROYAL: "#1a0a20",
   GOLD: "#d4a853",
+  GOLD_LIGHT: "#FFD700",
+  AMBER: "#FFA500",
   CREAM: "#fdf6e3",
 };
 
@@ -17,91 +21,169 @@ export function ProfileLoader() {
     <div className="flex flex-col items-center justify-center min-h-[70vh]">
       {/* Loader Container */}
       <div className="relative flex flex-col items-center">
-        {/* Outer rotating ring */}
-        <div className="relative w-32 h-32">
-          {/* Spinning outer ring */}
-          <div
-            className="absolute inset-0 rounded-full animate-spin"
+        
+        {/* Main loader - Concentric rings */}
+        <div className="relative w-28 h-28">
+          
+          {/* Outer spinning ring */}
+          <motion.div
+            className="absolute inset-0 rounded-full"
             style={{
-              background: `conic-gradient(from 0deg, transparent, ${COLORS.GOLD}, transparent)`,
-              animationDuration: "2s",
+              border: `3px solid transparent`,
+              borderTopColor: COLORS.GOLD_LIGHT,
+              borderRightColor: COLORS.GOLD,
+            }}
+            animate={{ rotate: 360 }}
+            transition={{
+              duration: 1.2,
+              repeat: Infinity,
+              ease: "linear",
             }}
           />
-
-          {/* Inner dark circle */}
-          <div
-            className="absolute inset-2 rounded-full flex items-center justify-center"
+          
+          {/* Middle ring - counter rotate */}
+          <motion.div
+            className="absolute inset-3 rounded-full"
             style={{
-              background: `radial-gradient(circle, ${COLORS.BG_ROYAL} 0%, ${COLORS.BG_DEEP} 100%)`,
-              boxShadow: `0 0 40px ${COLORS.GOLD}20, inset 0 0 30px ${COLORS.GOLD}10`,
+              border: `2px solid transparent`,
+              borderBottomColor: COLORS.AMBER,
+              borderLeftColor: COLORS.GOLD,
             }}
-          >
-            {/* Om symbol */}
-            <span
-              className="text-4xl animate-pulse"
-              style={{
-                color: COLORS.GOLD,
-                textShadow: `0 0 20px ${COLORS.GOLD}60`,
-                animationDuration: "1.5s",
+            animate={{ rotate: -360 }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+          
+          {/* Inner pulsing circle */}
+          <motion.div
+            className="absolute inset-6 rounded-full"
+            style={{
+              background: `radial-gradient(circle, ${COLORS.GOLD}30 0%, transparent 70%)`,
+              boxShadow: `0 0 20px ${COLORS.GOLD}40`,
+            }}
+            animate={{
+              scale: [1, 1.15, 1],
+              opacity: [0.5, 0.8, 0.5],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          
+          {/* Center diamond icon */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.svg
+              width="24"
+              height="36"
+              viewBox="0 0 30 45"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
               }}
             >
-              ॐ
-            </span>
+              <defs>
+                <linearGradient id="diamondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={COLORS.CREAM} />
+                  <stop offset="50%" stopColor={COLORS.GOLD_LIGHT} />
+                  <stop offset="100%" stopColor={COLORS.GOLD} />
+                </linearGradient>
+              </defs>
+              <path
+                d="M15 0 L30 20 L15 45 L0 20 Z"
+                fill="url(#diamondGrad)"
+                style={{
+                  filter: `drop-shadow(0 0 8px ${COLORS.GOLD}80)`,
+                }}
+              />
+              <path
+                d="M15 5 L25 20 L15 40 L5 20 Z"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.4)"
+                strokeWidth="0.5"
+              />
+            </motion.svg>
           </div>
 
-          {/* Floating dots */}
+          {/* Orbiting dots */}
           {[0, 1, 2, 3].map((i) => (
-            <div
+            <motion.div
               key={i}
               className="absolute w-2 h-2 rounded-full"
               style={{
-                background: COLORS.GOLD,
-                boxShadow: `0 0 10px ${COLORS.GOLD}`,
+                background: COLORS.GOLD_LIGHT,
+                boxShadow: `0 0 8px ${COLORS.GOLD}`,
                 top: "50%",
                 left: "50%",
-                transform: `rotate(${i * 90}deg) translateY(-60px)`,
-                animation: `pulse 1.5s ease-in-out infinite`,
-                animationDelay: `${i * 0.2}s`,
+                marginTop: -4,
+                marginLeft: -4,
+              }}
+              animate={{
+                x: [
+                  Math.cos((i * Math.PI) / 2) * 48,
+                  Math.cos((i * Math.PI) / 2 + Math.PI * 2) * 48,
+                ],
+                y: [
+                  Math.sin((i * Math.PI) / 2) * 48,
+                  Math.sin((i * Math.PI) / 2 + Math.PI * 2) * 48,
+                ],
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "linear",
+                delay: i * 0.15,
               }}
             />
           ))}
         </div>
 
         {/* Loading text */}
-        <div className="mt-8 text-center">
-          <p
-            className="text-lg font-medium tracking-wide"
+        <div className="mt-10 text-center">
+          <motion.p
+            className="text-base font-light tracking-[0.2em] uppercase"
             style={{
               color: COLORS.CREAM,
-              fontFamily: "var(--font-ethereal), serif",
+            }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
             }}
           >
-            Loading Your Profile
-          </p>
-          <div className="flex items-center justify-center gap-1 mt-2">
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                className="w-1.5 h-1.5 rounded-full animate-bounce"
-                style={{
-                  background: COLORS.GOLD,
-                  animationDelay: `${i * 0.15}s`,
-                  animationDuration: "0.8s",
-                }}
-              />
-            ))}
+            Loading Profile
+          </motion.p>
+          
+          {/* Animated progress bar */}
+          <div 
+            className="mt-4 w-32 h-0.5 rounded-full overflow-hidden mx-auto"
+            style={{ background: `${COLORS.GOLD}20` }}
+          >
+            <motion.div
+              className="h-full rounded-full"
+              style={{
+                background: `linear-gradient(90deg, ${COLORS.GOLD}, ${COLORS.GOLD_LIGHT}, ${COLORS.GOLD})`,
+              }}
+              animate={{
+                x: ["-100%", "100%"],
+              }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
           </div>
-        </div>
-
-        {/* Decorative diyas */}
-        <div className="absolute -left-16 top-1/2 -translate-y-1/2 text-2xl opacity-40 animate-pulse">
-          🪔
-        </div>
-        <div
-          className="absolute -right-16 top-1/2 -translate-y-1/2 text-2xl opacity-40 animate-pulse"
-          style={{ animationDelay: "0.5s" }}
-        >
-          🪔
         </div>
       </div>
     </div>

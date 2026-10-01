@@ -2,24 +2,28 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { GraduationCap, ArrowLeft, Loader2 } from "lucide-react";
-import { useCollegeSearch, useUpdateCollege, type College } from "@/lib/api/hooks";
+import { GraduationCap, Loader2 } from "lucide-react";
+import {
+  useCollegeSearch,
+  useUpdateCollege,
+  type College,
+} from "@/lib/api/hooks";
 import { COLORS } from "@/components/pages/complete-profile/constants/palette";
 import { useDebounce } from "./hooks";
-import { ModeToggle } from "./ModeToggle";
-import { CollegeSearchInput } from "./CollegeSearchInput";
-import { CollegeDropdown } from "./CollegeDropdown";
-import { SelectedCollegeCard } from "./SelectedCollegeCard";
-import { ManualInput } from "./ManualInput";
+import {
+  ModeToggle,
+  CollegeSearchInput,
+  CollegeDropdown,
+  SelectedCollegeCard,
+  ManualInput,
+} from "./sections";
 
 // ═══════════════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════════════
 
 interface CollegeDetailsStepProps {
-  onSubmit: (college: string) => void;
-  onBack: () => void;
-  existingCollege?: string;
+  refetchProgress: () => void;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -27,15 +31,17 @@ interface CollegeDetailsStepProps {
 // ═══════════════════════════════════════════════════════════════════
 
 export function CollegeDetailsStep({
-  onSubmit,
-  onBack,
-  existingCollege,
+  refetchProgress,
 }: CollegeDetailsStepProps) {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null);
-  const [manualCollege, setManualCollege] = useState(existingCollege || "");
+  const [manualCollege, setManualCollege] = useState("");
+
+  // If the person's college is not in our dataset , then he have to enter it manually.
   const [isManualMode, setIsManualMode] = useState(false);
+
+  // Dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -46,11 +52,13 @@ export function CollegeDetailsStep({
   // College search hook
   const { colleges, isLoading: isSearching } = useCollegeSearch(
     isManualMode ? "" : debouncedSearch,
-    15
+    15,
   );
 
   // Update college hook
-  const { updateCollege, isPending: isUpdating } = useUpdateCollege(session?.user?.id);
+  const { updateCollege, isPending: isUpdating } = useUpdateCollege(
+    session?.user?.id,
+  );
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -104,11 +112,18 @@ export function CollegeDetailsStep({
       { body: { college: collegeName } },
       {
         onSuccess: () => {
-          onSubmit(collegeName);
+          refetchProgress();
         },
-      }
+      },
     );
-  }, [isManualMode, manualCollege, selectedCollege, searchQuery, updateCollege, onSubmit]);
+  }, [
+    isManualMode,
+    manualCollege,
+    selectedCollege,
+    searchQuery,
+    updateCollege,
+    refetchProgress,
+  ]);
 
   const isValid = isManualMode
     ? manualCollege.trim().length >= 3
@@ -127,7 +142,10 @@ export function CollegeDetailsStep({
         >
           <GraduationCap className="h-8 w-8" style={{ color: COLORS.GOLD }} />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: COLORS.CREAM }}>
+        <h2
+          className="text-2xl sm:text-3xl font-bold mb-2"
+          style={{ color: COLORS.CREAM }}
+        >
           Your College Details
         </h2>
         <p style={{ color: `${COLORS.CREAM}60` }}>
@@ -170,25 +188,15 @@ export function CollegeDetailsStep({
         <ManualInput value={manualCollege} onChange={setManualCollege} />
       )}
 
-      {/* Action Buttons */}
-      <div className="flex gap-4 pt-4">
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium transition-all hover:scale-[1.02]"
-          style={{
-            background: COLORS.BG_ROYAL,
-            border: `1px solid ${COLORS.GOLD}30`,
-            color: COLORS.CREAM,
-          }}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </button>
+      {/* Action Button */}
+      <div className="pt-4">
         <button
           onClick={handleSubmit}
           disabled={!isValid || isUpdating}
-          className={`flex-1 py-3 rounded-xl font-semibold text-lg transition-all duration-300 ${
-            isValid && !isUpdating ? "hover:scale-[1.02] hover:shadow-lg" : "opacity-50 cursor-not-allowed"
+          className={`w-full py-3 rounded-xl font-semibold text-lg transition-all duration-300 ${
+            isValid && !isUpdating
+              ? "hover:scale-[1.02] hover:shadow-lg"
+              : "opacity-50 cursor-not-allowed"
           }`}
           style={{
             background: isValid

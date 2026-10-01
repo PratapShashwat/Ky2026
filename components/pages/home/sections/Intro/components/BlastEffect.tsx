@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useIntro } from "../context/IntroContext";
 
 export function BlastEffect() {
@@ -10,250 +10,184 @@ export function BlastEffect() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Detect mobile
     const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isSmallScreen = window.innerWidth < 768;
     setIsMobile(hasTouch || isSmallScreen);
 
     if (typeof window !== "undefined") {
       audioRef.current = new Audio("/audio/explosion.mp3");
-      audioRef.current.volume = 0.5;
+      audioRef.current.volume = 0.6;
     }
   }, []);
 
   useEffect(() => {
     if (phase === "blasting") {
-      // Play explosion sound
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(() => {});
       }
       
-      // Transition to video after blast animation completes
+      // Give the blast time to feel impactful
       const timer = setTimeout(() => {
         startVideo();
-      }, isMobile ? 1200 : 1800); // Faster on mobile
+      }, isMobile ? 1000 : 1500);
       return () => clearTimeout(timer);
     }
   }, [phase, startVideo, isMobile]);
 
+  // Pre-compute spark positions for performance
+  const sparkData = useMemo(() => 
+    [...Array(24)].map((_, i) => ({
+      angle: (i / 24) * Math.PI * 2 + (Math.random() - 0.5) * 0.2,
+      distance: 28 + Math.random() * 30,
+      size: 4 + Math.random() * 4,
+      delay: Math.random() * 0.1,
+      duration: 0.7 + Math.random() * 0.3,
+    })), []
+  );
+
   if (phase !== "blasting") return null;
 
-  // MOBILE: Simplified blast effect
+  // MOBILE: Ultra-minimal - just flash and fade, no particles
   if (isMobile) {
     return (
       <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
-        {/* Core bright flash */}
+        {/* Quick white flash */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(circle, #FFFFFF 0%, #FFD700 40%, transparent 70%)",
-          }}
-          initial={{ width: 0, height: 0, opacity: 1 }}
-          animate={{
-            width: ["0vw", "300vw"],
-            height: ["0vw", "300vw"],
-            opacity: [1, 0],
-          }}
-          transition={{
-            duration: 1,
-            ease: "easeOut",
-          }}
+          className="absolute inset-0 bg-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ duration: 0.4, times: [0, 0.15, 1], ease: "easeOut" }}
         />
-
-        {/* Single golden ring */}
+        
+        {/* Golden glow that fades */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-amber-400"
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at center, #FFD700 0%, #FF8C00 30%, transparent 60%)",
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.9, 0] }}
+          transition={{ duration: 0.7, times: [0, 0.2, 1], ease: "easeOut" }}
+        />
+        
+        {/* Single expanding ring - no box-shadow */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-amber-400"
           initial={{ width: 0, height: 0, opacity: 1 }}
-          animate={{
-            width: ["0vw", "200vw"],
-            height: ["0vw", "200vw"],
-            opacity: [1, 0],
-          }}
-          transition={{
-            duration: 1,
-            ease: "easeOut",
-          }}
+          animate={{ width: "200vmax", height: "200vmax", opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         />
       </div>
     );
   }
 
-  // DESKTOP: Full blast effect
+  // DESKTOP: Optimized cinematic blast
   return (
     <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
-      {/* Core bright flash */}
+      {/* Initial bright white flash */}
+      <motion.div
+        className="absolute inset-0 bg-white"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 1, 0] }}
+        transition={{ duration: 0.25, times: [0, 0.2, 1], ease: "easeOut" }}
+      />
+
+      {/* Core explosion - expanding golden fireball */}
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
-          background: "radial-gradient(circle, #FFFFFF 0%, #FFF8DC 20%, #FFD700 40%, transparent 70%)",
+          background: "radial-gradient(circle, #FFFFFF 0%, #FFD700 30%, #FF8C00 60%, transparent 100%)",
         }}
         initial={{ width: 0, height: 0, opacity: 1 }}
         animate={{
-          width: ["0vw", "50vw", "300vw"],
-          height: ["0vw", "50vw", "300vw"],
+          width: ["0vw", "80vw", "300vw"],
+          height: ["0vw", "80vw", "300vw"],
           opacity: [1, 1, 0],
         }}
-        transition={{
-          duration: 1.5,
-          times: [0, 0.3, 1],
-          ease: "easeOut",
-        }}
+        transition={{ duration: 1, times: [0, 0.35, 1], ease: "easeOut" }}
       />
 
-      {/* Golden ring expanding */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-amber-400"
-        initial={{ width: 0, height: 0, opacity: 1 }}
-        animate={{
-          width: ["0vw", "200vw"],
-          height: ["0vw", "200vw"],
-          opacity: [1, 0],
-          borderWidth: ["4px", "1px"],
-        }}
-        transition={{
-          duration: 1.2,
-          ease: "easeOut",
-        }}
-        style={{
-          boxShadow: "0 0 60px 20px rgba(255, 180, 50, 0.6)",
-        }}
-      />
-
-      {/* Second golden ring */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-orange-400"
-        initial={{ width: 0, height: 0, opacity: 1 }}
-        animate={{
-          width: ["0vw", "180vw"],
-          height: ["0vw", "180vw"],
-          opacity: [0.8, 0],
-        }}
-        transition={{
-          duration: 1.4,
-          ease: "easeOut",
-          delay: 0.1,
-        }}
-        style={{
-          boxShadow: "0 0 40px 15px rgba(255, 150, 50, 0.5)",
-        }}
-      />
-
-      {/* Warm color burst layer */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255, 200, 100, 0.9) 0%, rgba(255, 150, 50, 0.6) 30%, rgba(255, 100, 50, 0.3) 50%, transparent 70%)",
-        }}
-        initial={{ width: 0, height: 0, opacity: 1 }}
-        animate={{
-          width: ["0vw", "250vw"],
-          height: ["0vw", "250vw"],
-          opacity: [1, 0.6, 0],
-        }}
-        transition={{
-          duration: 1.5,
-          times: [0, 0.4, 1],
-          ease: "easeOut",
-          delay: 0.05,
-        }}
-      />
-
-      {/* Light rays - more prominent */}
-      {[...Array(16)].map((_, i) => (
+      {/* Three shockwave rings */}
+      {[0, 0.1, 0.2].map((delay, i) => (
         <motion.div
-          key={`ray-${i}`}
+          key={`ring-${i}`}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            border: `${3 - i * 0.5}px solid ${i === 0 ? '#FFD700' : i === 1 ? '#FFA500' : '#FF8C00'}`,
+            boxShadow: i === 0 ? "0 0 40px 15px rgba(255, 200, 100, 0.5)" : undefined,
+          }}
+          initial={{ width: 0, height: 0, opacity: 1 }}
+          animate={{
+            width: `${280 - i * 40}vmax`,
+            height: `${280 - i * 40}vmax`,
+            opacity: 0,
+          }}
+          transition={{ duration: 0.9, ease: "easeOut", delay }}
+        />
+      ))}
+
+      {/* Light rays - 12 rays */}
+      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle) => (
+        <motion.div
+          key={`ray-${angle}`}
           className="absolute top-1/2 left-1/2 origin-bottom"
           style={{
-            width: i % 2 === 0 ? "6px" : "3px",
-            height: "150vh",
-            background: i % 2 === 0 
-              ? "linear-gradient(to top, transparent, rgba(255, 215, 0, 0.9), rgba(255, 255, 255, 0.8), transparent)"
-              : "linear-gradient(to top, transparent, rgba(255, 180, 50, 0.6), transparent)",
-            transform: `translate(-50%, -100%) rotate(${i * 22.5}deg)`,
+            width: "5px",
+            height: "130vh",
+            background: "linear-gradient(to top, transparent 0%, rgba(255, 215, 0, 0.8) 30%, rgba(255, 215, 0, 0.8) 70%, transparent 100%)",
+            transform: `translate(-50%, -100%) rotate(${angle}deg)`,
           }}
           initial={{ scaleY: 0, opacity: 0 }}
-          animate={{
-            scaleY: [0, 1.5, 0],
-            opacity: [0, 1, 0],
+          animate={{ 
+            scaleY: [0, 1.3, 1], 
+            opacity: [0, 1, 0] 
           }}
-          transition={{
-            duration: 1.2,
-            times: [0, 0.4, 1],
-            ease: "easeOut",
-            delay: 0.1 + i * 0.02,
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        />
+      ))}
+
+      {/* Sparks - 20 particles */}
+      {sparkData.map((spark, i) => (
+        <motion.div
+          key={`spark-${i}`}
+          className="absolute top-1/2 left-1/2 rounded-full"
+          style={{
+            width: spark.size,
+            height: spark.size,
+            background: i % 2 === 0 ? "#FFD700" : "#FFF",
+            boxShadow: `0 0 ${spark.size * 2}px rgba(255, 200, 100, 0.7)`,
+          }}
+          initial={{ x: 0, y: 0, opacity: 1 }}
+          animate={{
+            x: Math.cos(spark.angle) * spark.distance + "vw",
+            y: Math.sin(spark.angle) * spark.distance + "vh",
+            opacity: 0,
+          }}
+          transition={{ 
+            duration: spark.duration, 
+            ease: "easeOut", 
+            delay: spark.delay 
           }}
         />
       ))}
 
-      {/* Particle sparks - golden */}
-      {[...Array(30)].map((_, i) => {
-        const angle = (i / 30) * Math.PI * 2;
-        const distance = 40 + Math.random() * 40;
-        const x = Math.cos(angle) * distance;
-        const y = Math.sin(angle) * distance;
-        const size = 2 + Math.random() * 4;
-
-        return (
-          <motion.div
-            key={`spark-${i}`}
-            className="absolute top-1/2 left-1/2 rounded-full"
-            style={{
-              width: size,
-              height: size,
-              background: i % 3 === 0 ? "#FFD700" : i % 3 === 1 ? "#FFA500" : "#FFFFFF",
-              boxShadow: `0 0 ${size * 3}px ${size}px rgba(255, 200, 100, 0.8)`,
-            }}
-            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-            animate={{
-              x: `${x}vw`,
-              y: `${y}vh`,
-              opacity: [1, 1, 0],
-              scale: [1, 0.8, 0],
-            }}
-            transition={{
-              duration: 1 + Math.random() * 0.5,
-              times: [0, 0.5, 1],
-              ease: "easeOut",
-              delay: 0.15 + Math.random() * 0.1,
-            }}
-          />
-        );
-      })}
-
-      {/* Floating embers */}
-      {[...Array(20)].map((_, i) => {
-        const startX = -50 + Math.random() * 100;
-        const startY = 50 + Math.random() * 30;
-
-        return (
-          <motion.div
-            key={`ember-${i}`}
-            className="absolute rounded-full"
-            style={{
-              width: 3,
-              height: 3,
-              left: `${startX}%`,
-              top: `${startY}%`,
-              background: "#FFD700",
-              boxShadow: "0 0 6px 2px rgba(255, 200, 50, 0.8)",
-            }}
-            initial={{ opacity: 0, y: 0 }}
-            animate={{
-              opacity: [0, 1, 1, 0],
-              y: [0, -100 - Math.random() * 200],
-              x: (Math.random() - 0.5) * 100,
-            }}
-            transition={{
-              duration: 2 + Math.random(),
-              times: [0, 0.1, 0.7, 1],
-              ease: "easeOut",
-              delay: 0.3 + Math.random() * 0.3,
-            }}
-          />
-        );
-      })}
+      {/* Center glow pulse */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          width: "25vw",
+          height: "25vw",
+          background: "radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,215,0,0.5) 40%, transparent 70%)",
+          filter: "blur(15px)",
+        }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ 
+          scale: [0, 2, 2.5], 
+          opacity: [0, 1, 0] 
+        }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      />
     </div>
   );
 }
