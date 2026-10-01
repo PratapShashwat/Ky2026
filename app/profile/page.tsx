@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/api/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/api/auth";
 import { ProfilePageContent } from "@/components/pages/profile/ProfilePageContent";
 
 export const metadata = {
@@ -8,7 +9,7 @@ export const metadata = {
 };
 
 export default async function ProfilePage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect("/login");
